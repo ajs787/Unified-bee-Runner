@@ -87,8 +87,8 @@ try:
     parser.add_argument(
         "--number-of-samples",
         type=int,
-        help="(sampling)the number of samples max that will be gathered by the sampler, defalt=1000",
-        default=1000,
+        help="(sampling)the number of samples max that will be gathered by the sampler, defalt=40000",
+        default=40000,
     )
     parser.add_argument(
         "--max-workers-video-sampling",
@@ -204,12 +204,18 @@ if args.start > args.end:
 if args.start <= 0 and args.end >= 0:
     try:
         subprocess.run(
-            "git clone https://github.com/Elias2660/Video_Frame_Counter.git >> clones.log 2>&1",
+            "git clone https://github.com/Elias2660/Video_Frame_Counter.git >> CLONES.log 2>&1",
             shell=True,
         )
         file_list = os.listdir(path)
         contains_h264 = True in [".h264" in file for file in file_list] # if there is at least a single h264 file
         contains_mp4 = True in [".mp4" in file for file in file_list] # if there is a single mp4 file
+        
+        if "CONVERSION_STEP_0.log" in file_list:
+            to_truncate = open("CONVERSION_STEP_0.log", "r+")
+            to_truncate.truncate(0)
+            to_truncate.close()
+        
         if contains_h264 and contains_mp4:
             raise "Both types of file are in this directory, please remove one"
         elif contains_h264:
@@ -217,13 +223,13 @@ if args.start <= 0 and args.end >= 0:
                 "Converting .h264 to .mp4, old h264 files can be found in the h264_files folder"
             )
             subprocess.run(
-                "python Video_Frame_Counter/h264tomp4.py >> conversion_step_0.log 2>&1",
+                "python Video_Frame_Counter/h264tomp4.py >> CONVERSION_STEP_0.log 2>&1",
                 shell=True,
             )
         elif contains_mp4:
             logging.info("No conversion needed, making counts.csv")
             subprocess.run(
-                "python Video_Frame_Counter/make_counts.py >> conversion_step_0.log 2>&1",
+                "python Video_Frame_Counter/make_counts.py >> CONVERSION_STEP_0.log 2>&1",
                 shell=True,
             )
         else:
@@ -264,7 +270,7 @@ if args.start <= 2 and args.end >=2:
         ]
         logging.info(f"Creating the dataset with the files: {log_list}")
         subprocess.run(
-            "git clone https://github.com/Elias2660/Dataset_Creator.git >> clones.log 2>&1",
+            "git clone https://github.com/Elias2660/Dataset_Creator.git >> CLONES.log 2>&1",
             shell=True,
         )
         string_log_list = ",".join(log_list).strip().replace(" ", "")
@@ -290,7 +296,7 @@ if args.start <= 3 and args.end >=3:
     try:
         # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
         BEE_ANALYSIS_CLONE = "https://github.com/Elias2660/working_bee_analysis.git"
-        subprocess.run(f"git clone {BEE_ANALYSIS_CLONE} >> clones.log 2>&1", shell=True)
+        subprocess.run(f"git clone {BEE_ANALYSIS_CLONE} >> CLONES.log 2>&1", shell=True)
         dir_name = BEE_ANALYSIS_CLONE.split(".")[1].strip().split("/")[-1].strip()
         
         logging.info("truncating DATASET_SPLIT_3.log, if it exists")
@@ -300,7 +306,7 @@ if args.start <= 3 and args.end >=3:
             to_truncate.truncate(0)
             to_truncate.close()
         
-        arguments = f"--k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {dir_name}"
+        arguments = f"--k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --height {args.height} --path_to_file {dir_name} --frames_per_sample {args.frames_per_sample}"
         subprocess.run(
             f"python {dir_name}/make_validation_training.py {arguments} >> DATASET_SPLIT_3.log 2>&1",
             shell=True,
@@ -318,7 +324,7 @@ if args.start <= 4 and args.end >= 4:
         subprocess.run("export NUMEXPR_NUM_THREADS=1", shell=True)
         subprocess.run("export OMP_NUM_THREADS=1", shell=True) # restrict the number of subthreads because all our commands use multiprocessing
         subprocess.run(
-            f"git clone https://github.com/Elias2660/VideoSamplerRewrite.git >> clones.log 2>&1",
+            f"git clone https://github.com/Elias2660/VideoSamplerRewrite.git >> CLONES.log 2>&1",
             shell=True,
         )
         
