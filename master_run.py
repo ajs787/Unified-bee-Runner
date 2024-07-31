@@ -56,7 +56,7 @@ parser.add_argument(
 # for background subtraction
 parser.add_argument(
     "--background-subtraction-type",
-    options=["MOG2", "KNN"],
+    choices=["MOG2", "KNN"],
     required=False,
     default=None,
     type=str,
