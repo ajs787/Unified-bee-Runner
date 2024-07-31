@@ -1,3 +1,10 @@
+"""
+TODO: Add log file truncation
+TODO: Work to add common pitfalls
+TODO: Fix stepping issues
+"""
+
+
 import argparse
 import os
 import logging
