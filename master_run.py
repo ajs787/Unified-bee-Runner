@@ -179,97 +179,104 @@ except Exception as e:
 logging.info("(0) Starting the video conversions, always defaulting to .mp4")
 
 #  if the videos a .h264, convert to .mp4
-try:
-    os.chdir(path)
-    subprocess.run(
-        "git clone https://github.com/Elias2660/Video_Frame_Counter.git >> clones.log 2>&1",
-        shell=True,
-    )
-    file_list = os.listdir(path)
-    contains_h264 = True in [".h264" in file for file in file_list]
-    contains_mp4 = True in [".mp4" in file for file in file_list]
-    if contains_h264 and contains_mp4:
-        raise "Both types of file are in this directory, please remove one"
-    elif contains_h264:
-        logging.info(
-            "Converting .h264 to .mp4, old h264 files can be found in the h264_files folder"
-        )
+if args.start <= 0:
+    try:
+        os.chdir(path)
         subprocess.run(
-            "python Video_Frame_Counter/h264tomp4.py >> conversion_step_0.log 2>&1", shell=True
-        )
-    elif contains_mp4:
-        logging.info("No conversion needed, making counts.csv")
-        subprocess.run(
-            "python Video_Frame_Counter/make_counts.py >> conversion_step_0.log 2>&1",
+            "git clone https://github.com/Elias2660/Video_Frame_Counter.git >> clones.log 2>&1",
             shell=True,
         )
-    else:
-        raise "Something went wrong with the file typing, as it seems that there are no .h264 or .mp4 files in the directory"
-except Exception as e:
-    logging.error(f"Error: {e}")
-    raise "Something went wrong in step 1"
+        file_list = os.listdir(path)
+        contains_h264 = True in [".h264" in file for file in file_list]
+        contains_mp4 = True in [".mp4" in file for file in file_list]
+        if contains_h264 and contains_mp4:
+            raise "Both types of file are in this directory, please remove one"
+        elif contains_h264:
+            logging.info(
+                "Converting .h264 to .mp4, old h264 files can be found in the h264_files folder"
+            )
+            subprocess.run(
+                "python Video_Frame_Counter/h264tomp4.py >> conversion_step_0.log 2>&1", shell=True
+            )
+        elif contains_mp4:
+            logging.info("No conversion needed, making counts.csv")
+            subprocess.run(
+                "python Video_Frame_Counter/make_counts.py >> conversion_step_0.log 2>&1",
+                shell=True,
+            )
+        else:
+            raise "Something went wrong with the file typing, as it seems that there are no .h264 or .mp4 files in the directory"
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        raise "Something went wrong in step 0"
 
 
 logging.info("(1) Starting the background subtraction")
-try:
-    # TODO create the background subtraction
-    if args.background_subtraction_type is not None:
-        logging.info("Starting the background subtraction")
-    else:
-        logging.info("No background subtraction type given, skipping this step")
-except Exception as e:
-    logging.error(f"Error: {e}")
-    raise "Something went wrong in step 2"
+
+if args.start <= 1:
+    try:
+        # TODO create the background subtraction
+        if args.background_subtraction_type is not None:
+            logging.info("Starting the background subtraction")
+        else:
+            logging.info("No background subtraction type given, skipping this step")
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        raise "Something went wrong in step 1"
 
 logging.info("(2) Starting the data set creation")
-try:
-    log_list = [file.strip() for file in os.listdir(path) if "log" in file]
-    subprocess.run(
-        "git clone https://github.com/Elias2660/Dataset_Creator.git >> clones.log 2>&1",
-        shell=True,
-    )
-    subprocess.run(
-        f"python Dataset_Creator/Make_Dataset.py --files {','.join(log_list).strip().replace(' ', '')} --starting-frame {args.starting_frame} --frame-interval {args.frame_interval} >> make_dataset_step_2.log 2>&1",
-        shell=True,
-    )
-except Exception as e:
-    logging.error(f"Error: {e}")
-    raise "Something went wrong in step 3"
+if args.start <= 2:
+    try:
+        log_list = [file.strip() for file in os.listdir(path) if "log" in file]
+        subprocess.run(
+            "git clone https://github.com/Elias2660/Dataset_Creator.git >> clones.log 2>&1",
+            shell=True,
+        )
+        subprocess.run(
+            f"python Dataset_Creator/Make_Dataset.py --files {','.join(log_list).strip().replace(' ', '')} --starting-frame {args.starting_frame} --frame-interval {args.frame_interval} >> make_dataset_step_2.log 2>&1",
+            shell=True,
+        )
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        raise "Something went wrong in step 2"
 
 logging.info("(3) Splitting up the data")
-try:
-    # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
-    BEE_ANALYSIS_CLONE = "https://github.com/Elias2660/working_bee_analysis.git"
-    subprocess.run(f"git clone {BEE_ANALYSIS_CLONE} >> clones.log 2>&1", shell=True)
-    dir_name = BEE_ANALYSIS_CLONE.split(".")[0].strip().split("/")[-1].strip()
-    subprocess.run(
-        f"python {dir_name}/make_validation_train.py --k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {dir_name} >> dataset_split_step_3.log 2>&1",
-        shell=True,
-    )
-except Exception as e:
-    logging.error(f"Error: {e}")
-    raise "Something went wrong in step 4"
+if args.start <= 3:
+    try:
+        # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
+        BEE_ANALYSIS_CLONE = "https://github.com/Elias2660/working_bee_analysis.git"
+        subprocess.run(f"git clone {BEE_ANALYSIS_CLONE} >> clones.log 2>&1", shell=True)
+        dir_name = BEE_ANALYSIS_CLONE.split(".")[0].strip().split("/")[-1].strip()
+        subprocess.run(
+            f"python {dir_name}/make_validation_train.py --k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {dir_name} >> dataset_split_step_3.log 2>&1",
+            shell=True,
+        )
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        raise "Something went wrong in step 3"
 
 logging.info("(4) Starting the tar sampling")
-try:
-    subprocess.run("python Dataset_Creater/dataset_checker.py", shell=True)
-    subprocess.run(
-        f"git clone https://github.com/Elias2660/VideoSamplerRewrite.git >> clones.log 2>&1",
-        shell=True,
-    )
-    subprocess.run(
-        f"python VideoSamplerRewrite/Dataprep.py --frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling} >> dataprep_step_4.log 2>&1",
-        shell=True,
-    )
-except Exception as e:
-    logging.error(f"Error: {e}")
-    raise "Something went wrong in step 4"
+if args.start <= 4:
+    try:
+        subprocess.run("python Dataset_Creater/dataset_checker.py", shell=True)
+        subprocess.run(
+            f"git clone https://github.com/Elias2660/VideoSamplerRewrite.git >> clones.log 2>&1",
+            shell=True,
+        )
+        subprocess.run(
+            f"python VideoSamplerRewrite/Dataprep.py --frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling} >> dataprep_step_4.log 2>&1",
+            shell=True,
+        )
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        raise "Something went wrong in step 4"
 
 logging.info("(5) Starting the model training")
-try:
-    subprocess.run("chmod -R 777 . >> chmoding.log >> 2>&1", shell=True)
-    subprocess.run(f"bash training-run.sh")
-    logging.info("Pipeline complete, training is occuring")
-except Exception as e:
-    logging.error(f"Error: {e}")
-    raise "Something went wrong in step 5"
+if args.start <= 5:
+    try:
+        subprocess.run(f"bash training-run.sh")
+        subprocess.run("chmod -R 777 . >> chmoding.log >> 2>&1", shell=True)
+        logging.info("Pipeline complete, training is occuring")
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        raise "Something went wrong in step 5"
