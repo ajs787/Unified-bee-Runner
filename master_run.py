@@ -205,7 +205,8 @@ logging.info("(3) Splitting up the data")
 # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
 BEE_ANALYSIS_CLONE = "https://github.com/Elias2660/working_bee_analysis.git"
 subprocess.run(f"git clone {BEE_ANALYSIS_CLONE} >> clones.log 2>&1", shell=True)
-subprocess.run(f"python working_bee_analysis/make_validation_train.py --k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {BEE_ANALYSIS_CLONE.split('.')[0].strip().split("/")[-1].strip()} >> dataset_split.log 2>&1", shell=True)
+dir_name = BEE_ANALYSIS_CLONE.split('.')[0].strip().split('/')[-1].strip()
+subprocess.run(f"python {dir_name}/make_validation_train.py --k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {dir_name} >> dataset_split.log 2>&1", shell=True)
 
 logging.info("(4) Starting the tar sampling")
 subprocess.run("python Dataset_Creater/dataset_checker.py", shell=True)
