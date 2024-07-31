@@ -256,7 +256,7 @@ if args.start <= 3:
         subprocess.run(f"git clone {BEE_ANALYSIS_CLONE} >> clones.log 2>&1", shell=True)
         dir_name = BEE_ANALYSIS_CLONE.split(".")[1].strip().split("/")[-1].strip()
         subprocess.run(
-            f"python {dir_name}/make_validation_train.py --k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {dir_name} >> dataset_split_step_3.log 2>&1",
+            f"python {dir_name}/make_validation_training.py --k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {dir_name} >> dataset_split_step_3.log 2>&1",
             shell=True,
         )
     except Exception as e:
