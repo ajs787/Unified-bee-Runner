@@ -7,7 +7,6 @@ format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 
 try:
-
     description = """
     Runs the pipeline that runs the model on the data
     \n
@@ -196,12 +195,12 @@ try:
             "Converting .h264 to .mp4, old h264 files can be found in the h264_files folder"
         )
         subprocess.run(
-            "python Video_Frame_Counter/h264tomp4.py >> conversion.log 2>&1", shell=True
+            "python Video_Frame_Counter/h264tomp4.py >> conversion_step_0.log 2>&1", shell=True
         )
     elif contains_mp4:
         logging.info("No conversion needed, making counts.csv")
         subprocess.run(
-            "python Video_Frame_Counter/make_counts.py >> conversion.log 2>&1",
+            "python Video_Frame_Counter/make_counts.py >> conversion_step_0.log 2>&1",
             shell=True,
         )
     else:
@@ -230,7 +229,7 @@ try:
         shell=True,
     )
     subprocess.run(
-        f"python Dataset_Creator/Make_Dataset.py --files {','.join(log_list).strip().replace(' ', '')} --starting-frame {args.starting_frame} --frame-interval {args.frame_interval} >> make_dataset.log 2>&1",
+        f"python Dataset_Creator/Make_Dataset.py --files {','.join(log_list).strip().replace(' ', '')} --starting-frame {args.starting_frame} --frame-interval {args.frame_interval} >> make_dataset_step_2.log 2>&1",
         shell=True,
     )
 except Exception as e:
@@ -244,7 +243,7 @@ try:
     subprocess.run(f"git clone {BEE_ANALYSIS_CLONE} >> clones.log 2>&1", shell=True)
     dir_name = BEE_ANALYSIS_CLONE.split(".")[0].strip().split("/")[-1].strip()
     subprocess.run(
-        f"python {dir_name}/make_validation_train.py --k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {dir_name} >> dataset_split.log 2>&1",
+        f"python {dir_name}/make_validation_train.py --k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {dir_name} >> dataset_split_step_3.log 2>&1",
         shell=True,
     )
 except Exception as e:
@@ -259,7 +258,7 @@ try:
         shell=True,
     )
     subprocess.run(
-        f"python VideoSamplerRewrite/Dataprep.py --frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling} >> dataprep.log 2>&1",
+        f"python VideoSamplerRewrite/Dataprep.py --frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling} >> dataprep_step_4.log 2>&1",
         shell=True,
     )
 except Exception as e:
