@@ -228,6 +228,7 @@ logging.info("(2) Starting the data set creation")
 if args.start <= 2:
     try:
         log_list = [file.strip() for file in os.listdir(path) if "log" in file]
+        logging.info(f"Creating the dataset with the files: {log_list}")
         subprocess.run(
             "git clone https://github.com/Elias2660/Dataset_Creator.git >> clones.log 2>&1",
             shell=True,
