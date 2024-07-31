@@ -240,8 +240,9 @@ if args.start <= 2:
             "git clone https://github.com/Elias2660/Dataset_Creator.git >> clones.log 2>&1",
             shell=True,
         )
+        string_log_list = ','.join(log_list).strip().replace(' ', '')
         subprocess.run(
-            f"python Dataset_Creator/Make_Dataset.py --files {','.join(log_list).strip().replace(' ', '')} --starting-frame {args.starting_frame} --frame-interval {args.frame_interval} >> make_dataset_step_2.log 2>&1",
+            f"python Dataset_Creator/Make_Dataset.py --files '{string_log_list}' --starting-frame {args.starting_frame} --frame-interval {args.frame_interval} >> make_dataset_step_2.log 2>&1",
             shell=True,
         )
     except Exception as e:
@@ -267,12 +268,15 @@ logging.info("(4) Starting the tar sampling")
 if args.start <= 4:
     try:
         subprocess.run("python Dataset_Creator/dataset_checker.py", shell=True)
+        subprocess.run("export MKL_NUM_THREADS=1", shell=True)
+        subprocess.run("export NUMEXPR_NUM_THREADS=1", shell=True)
+        subprocess.run("export OMP_NUM_THREADS=1", shell=True)
         subprocess.run(
             f"git clone https://github.com/Elias2660/VideoSamplerRewrite.git >> clones.log 2>&1",
             shell=True,
         )
         subprocess.run(
-            f"python VideoSamplerRewrite/Dataprep.py --frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling} >> dataprep_step_4.log 2>&1",
+            f"python VideoSamplerRewrite/Dataprep.py --frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling} >> dataprep.log 2>&1",
             shell=True,
         )
     except Exception as e:
