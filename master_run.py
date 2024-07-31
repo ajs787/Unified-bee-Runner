@@ -52,9 +52,9 @@ try:
         required=False,
     )
     parser.add_argument(
-        "--stop",
+        "--end",
         type=int,
-        help="(unifier)Stop the pipeline at the given step, default 6 (will not stop)",
+        help="(unifier)end the pipeline at the given step, default 6 (will not stop)",
         default=6,
         required=False,
     )
