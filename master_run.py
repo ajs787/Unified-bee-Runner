@@ -227,7 +227,7 @@ if args.start <= 1:
 logging.info("(2) Starting the data set creation")
 if args.start <= 2:
     try:
-        log_list = [file.strip() for file in os.listdir(path) if "log" in file]
+        log_list = [file.strip() for file in os.listdir(path) if file.beginswith("log") and file.endswith(".txt")]
         logging.info(f"Creating the dataset with the files: {log_list}")
         subprocess.run(
             "git clone https://github.com/Elias2660/Dataset_Creator.git >> clones.log 2>&1",
@@ -247,7 +247,7 @@ if args.start <= 3:
         # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
         BEE_ANALYSIS_CLONE = "https://github.com/Elias2660/working_bee_analysis.git"
         subprocess.run(f"git clone {BEE_ANALYSIS_CLONE} >> clones.log 2>&1", shell=True)
-        dir_name = BEE_ANALYSIS_CLONE.split(".")[0].strip().split("/")[-1].strip()
+        dir_name = BEE_ANALYSIS_CLONE.split(".")[1].strip().split("/")[-1].strip()
         subprocess.run(
             f"python {dir_name}/make_validation_train.py --k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {dir_name} >> dataset_split_step_3.log 2>&1",
             shell=True,
@@ -259,7 +259,7 @@ if args.start <= 3:
 logging.info("(4) Starting the tar sampling")
 if args.start <= 4:
     try:
-        subprocess.run("python Dataset_Creater/dataset_checker.py", shell=True)
+        subprocess.run("python Dataset_Creator/dataset_checker.py", shell=True)
         subprocess.run(
             f"git clone https://github.com/Elias2660/VideoSamplerRewrite.git >> clones.log 2>&1",
             shell=True,
