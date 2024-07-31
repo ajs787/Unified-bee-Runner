@@ -18,6 +18,8 @@ This program also expects that you are running this on the ilab servers, with th
 /koko/system/anaconda/envs/python38/bin:$PATH and /koko/system/anaconda/envs/python39/bin:$PATH
 
 
+
+
 One file to rule them all,
 one file to find them,
 One file to bring them all,
@@ -30,8 +32,6 @@ logging.info("(0) Starting the pipeline")
 parser = argparse.ArgumentParser(
     description=description
 )
-
-
 parser.add_argument(
     "--data_path",
     type=str,
@@ -39,7 +39,6 @@ parser.add_argument(
     default=".",
     required=False,
 )
-
 parser.add_argument(
     "--start",
     type=int,
@@ -47,7 +46,6 @@ parser.add_argument(
     default=0,
     required=False,
 )
-
 parser.add_argument(
     "--stop",
     type=int,
@@ -55,8 +53,6 @@ parser.add_argument(
     default=-1,
     required=False,
 )
-
-
 # for background subtraction
 parser.add_argument(
     "--background-subtraction-type",
@@ -66,7 +62,6 @@ parser.add_argument(
     type=str,
     help="(background subtraction)Background subtraction type to use, default None",
 )
-
 # for make_validation_training
 parser.add_argument(
     "--width",
