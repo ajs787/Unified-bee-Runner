@@ -199,7 +199,7 @@ else:
 logging.info("(2) Starting the data set creation")
 log_list = [file.strip() for file in os.listdir(path) if "log" in file]
 subprocess.run("git clone https://github.com/Elias2660/Dataset_Creator.git >> clones.log 2>&1", shell=True)
-subprocess.run(f"python Dataset_Creator/Make_Dataset.py --files {','.join(log_list).strip().replace(" ", "")} --starting-frame {args.starting_frame} --frame-interval {args.frame_interval} >> make_dataset.log 2>&1", shell=True)
+subprocess.run(f"python Dataset_Creator/Make_Dataset.py --files {','.join(log_list).strip().replace(' ', '')} --starting-frame {args.starting_frame} --frame-interval {args.frame_interval} >> make_dataset.log 2>&1", shell=True)
 
 logging.info("(3) Splitting up the data")
 # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
