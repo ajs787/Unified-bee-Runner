@@ -94,7 +94,7 @@ try:
         "--max-workers-video-sampling",
         type=int,
         help="(sampling)The number of workers to use for the multiprocessing of the sampler, default=15",
-        default=15,
+        default=10,
     )
     parser.add_argument(
         "--frames-per-sample",
@@ -314,8 +314,8 @@ if args.start <= 4 and args.end >= 4:
     try:
         subprocess.run("python Dataset_Creator/dataset_checker.py", shell=True)
         # 
-        # subprocess.run("export MKL_NUM_THREADS=1", shell=True)
-        # subprocess.run("export NUMEXPR_NUM_THREADS=1", shell=True)
+        subprocess.run("export MKL_NUM_THREADS=1", shell=True)
+        subprocess.run("export NUMEXPR_NUM_THREADS=1", shell=True)
         subprocess.run("export OMP_NUM_THREADS=1", shell=True) # restrict the number of subthreads because all our commands use multiprocessing
         subprocess.run(
             f"git clone https://github.com/Elias2660/VideoSamplerRewrite.git >> clones.log 2>&1",
