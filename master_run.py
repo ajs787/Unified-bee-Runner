@@ -1,9 +1,7 @@
 """
 TODO: Add log file truncation
 TODO: Work to add common pitfalls
-TODO: Fix stepping issues
 """
-
 
 import argparse
 import os
@@ -33,8 +31,10 @@ try:
     and in the data directory train them;
     In the Land of ilab where the shadows lie.
     """
+    
+    
+    # truncating the log file
 
-    logging.info("(0) Starting the pipeline")
 
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
@@ -54,8 +54,8 @@ try:
     parser.add_argument(
         "--stop",
         type=int,
-        help="(unifier)Stop the pipeline at the given step, default -1 (will not stop)",
-        default=-1,
+        help="(unifier)Stop the pipeline at the given step, default 6 (will not stop)",
+        default=6,
         required=False,
     )
     # for background subtraction
@@ -65,7 +65,7 @@ try:
         required=False,
         default=None,
         type=str,
-        help="(background subtraction)Background subtraction type to use, default None",
+        help="(background subtraction)Background subtraction type to use, default None, you can either choose MOG2 or KNN",
     )
     # for make_validation_training
     parser.add_argument(
@@ -179,23 +179,37 @@ try:
     )
 
     path = args.data_path
+    
+    os.chdir(path)
+    logging.info("truncating BEERUN.log")
+    file_list = os.listdir()
+    # truncate the file
+    if "BEERUN.log" in file_list:
+        to_truncate = open("BEERUN.log", "r+")
+        to_truncate.truncate(0)
+        to_truncate.close()
+    
+    
+    logging.info("(0) Starting the pipeline")
 except Exception as e:
     logging.error(f"Error: {e}")
     raise "Something went wrong in the beginning"
 # convert the videos
 logging.info("(0) Starting the video conversions, always defaulting to .mp4")
 
-#  if the videos a .h264, convert to .mp4
-if args.start <= 0:
+if args.start > args.end:
+    raise "You can't have the start be higher than the end"
+
+#  if the videos a .h264, convert to .mp4, else, just make a counts.txt
+if args.start <= 0 and args.end >= 0:
     try:
-        os.chdir(path)
         subprocess.run(
             "git clone https://github.com/Elias2660/Video_Frame_Counter.git >> clones.log 2>&1",
             shell=True,
         )
         file_list = os.listdir(path)
-        contains_h264 = True in [".h264" in file for file in file_list]
-        contains_mp4 = True in [".mp4" in file for file in file_list]
+        contains_h264 = True in [".h264" in file for file in file_list] # if there is at least a single h264 file
+        contains_mp4 = True in [".mp4" in file for file in file_list] # if there is a single mp4 file
         if contains_h264 and contains_mp4:
             raise "Both types of file are in this directory, please remove one"
         elif contains_h264:
@@ -203,7 +217,8 @@ if args.start <= 0:
                 "Converting .h264 to .mp4, old h264 files can be found in the h264_files folder"
             )
             subprocess.run(
-                "python Video_Frame_Counter/h264tomp4.py >> conversion_step_0.log 2>&1", shell=True
+                "python Video_Frame_Counter/h264tomp4.py >> conversion_step_0.log 2>&1",
+                shell=True,
             )
         elif contains_mp4:
             logging.info("No conversion needed, making counts.csv")
@@ -213,6 +228,14 @@ if args.start <= 0:
             )
         else:
             raise "Something went wrong with the file typing, as it seems that there are no .h264 or .mp4 files in the directory"
+        
+        # truncating chmoding.log, if it exists
+        if "chmoding.log" in file_list:
+            to_truncate = open("chmoding.log", "r+")
+            to_truncate.truncate(0)
+            to_truncate.close()
+        
+        subprocess.run("chmod -R 777 . >> chmoding.log >> 2>&1", shell=True)
     except Exception as e:
         logging.error(f"Error: {e}")
         raise "Something went wrong in step 0"
@@ -220,7 +243,7 @@ if args.start <= 0:
 
 logging.info("(1) Starting the background subtraction")
 
-if args.start <= 1:
+if args.start <= 1 and args.end >=1:
     try:
         # TODO create the background subtraction
         if args.background_subtraction_type is not None:
@@ -232,17 +255,30 @@ if args.start <= 1:
         raise "Something went wrong in step 1"
 
 logging.info("(2) Starting the dataset creation")
-if args.start <= 2:
+if args.start <= 2 and args.end >=2:
     try:
-        log_list = [file.strip() for file in os.listdir() if file[:3] == ("log") and file.endswith(".txt")]
+        log_list = [
+            file.strip()
+            for file in os.listdir()
+            if file.strip() == "logNo.txt" or file.strip() == "logPos.txt" or file.strip() == "logNeg.txt"
+        ]
         logging.info(f"Creating the dataset with the files: {log_list}")
         subprocess.run(
             "git clone https://github.com/Elias2660/Dataset_Creator.git >> clones.log 2>&1",
             shell=True,
         )
-        string_log_list = ','.join(log_list).strip().replace(' ', '')
+        string_log_list = ",".join(log_list).strip().replace(" ", "")
+        
+        logging.info("Truncating the MAKE_DATASET_2.log to zero, if it exists")
+        if "MAKE_DATASET_2.log" in file_list:
+            to_truncate = open("MAKE_DATASET_2.log", "r+")
+            to_truncate.truncate(0)
+            to_truncate.close()
+        
+        
+        arguments = f"--files '{string_log_list}' --starting-frame {args.starting_frame} --frame-interval {args.frame_interval}"
         subprocess.run(
-            f"python Dataset_Creator/Make_Dataset.py --files '{string_log_list}' --starting-frame {args.starting_frame} --frame-interval {args.frame_interval} >> make_dataset_step_2.log 2>&1",
+            f"python Dataset_Creator/Make_Dataset.py {arguments} >> MAKE_DATASET_2.log 2>&1",
             shell=True,
         )
     except Exception as e:
@@ -250,14 +286,23 @@ if args.start <= 2:
         raise "Something went wrong in step 2"
 
 logging.info("(3) Splitting up the data")
-if args.start <= 3:
+if args.start <= 3 and args.end >=3:
     try:
         # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
         BEE_ANALYSIS_CLONE = "https://github.com/Elias2660/working_bee_analysis.git"
         subprocess.run(f"git clone {BEE_ANALYSIS_CLONE} >> clones.log 2>&1", shell=True)
         dir_name = BEE_ANALYSIS_CLONE.split(".")[1].strip().split("/")[-1].strip()
+        
+        logging.info("truncating DATASET_SPLIT_3.log, if it exists")
+        
+        if "DATASET_SPLIT_3.log" in file_list:
+            to_truncate = open("DATASET_SPLIT_3.log", "r+")
+            to_truncate.truncate(0)
+            to_truncate.close()
+        
+        arguments = f"--k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {dir_name}"
         subprocess.run(
-            f"python {dir_name}/make_validation_training.py --k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --path_to_file {dir_name} >> dataset_split_step_3.log 2>&1",
+            f"python {dir_name}/make_validation_training.py {arguments} >> DATASET_SPLIT_3.log 2>&1",
             shell=True,
         )
     except Exception as e:
@@ -265,18 +310,24 @@ if args.start <= 3:
         raise "Something went wrong in step 3"
 
 logging.info("(4) Starting the tar sampling")
-if args.start <= 4:
+if args.start <= 4 and args.end >= 4:
     try:
         subprocess.run("python Dataset_Creator/dataset_checker.py", shell=True)
-        subprocess.run("export MKL_NUM_THREADS=1", shell=True)
-        subprocess.run("export NUMEXPR_NUM_THREADS=1", shell=True)
-        subprocess.run("export OMP_NUM_THREADS=1", shell=True)
+        # 
+        # subprocess.run("export MKL_NUM_THREADS=1", shell=True)
+        # subprocess.run("export NUMEXPR_NUM_THREADS=1", shell=True)
+        subprocess.run("export OMP_NUM_THREADS=1", shell=True) # restrict the number of subthreads because all our commands use multiprocessing
         subprocess.run(
             f"git clone https://github.com/Elias2660/VideoSamplerRewrite.git >> clones.log 2>&1",
             shell=True,
         )
+        
+        # ! No need to truncate because the Dataprep package already truncates
+        
+        subprocess.run("chmod -R 777 . >> chmoding.log >> 2>&1", shell=True)
+        arguments = f"--frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling}"
         subprocess.run(
-            f"python VideoSamplerRewrite/Dataprep.py --frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling} >> dataprep.log 2>&1",
+            f"python VideoSamplerRewrite/Dataprep.py {arguments} >> dataprep.log 2>&1",
             shell=True,
         )
     except Exception as e:
@@ -284,10 +335,18 @@ if args.start <= 4:
         raise "Something went wrong in step 4"
 
 logging.info("(5) Starting the model training")
-if args.start <= 5:
+if args.start <= 5 and args.end >= 5:
     try:
+        summary = """
+        Running model training can be tricky. As this runs, make sure that you're running the correct scripts
+        
+        Additionally, a big problem that can come up is that the wrong python environment is being used. It's possible that you might have to switch from python38 to 39, or vice versa
+        """
+        logging.info("")
+        subprocess.run("chmod -R 777 . >> chmoding.log >> 2>&1", shell=True)
         subprocess.run(f"bash training-run.sh")
         subprocess.run("chmod -R 777 . >> chmoding.log >> 2>&1", shell=True)
+
         logging.info("Pipeline complete, training is occuring")
     except Exception as e:
         logging.error(f"Error: {e}")

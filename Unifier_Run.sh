@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python Unified-bee-Runner/master_run.py >> master_log.log 2>&1
+python Unified-bee-Runner/master_run.py >> BEERUN.log 2>&1
