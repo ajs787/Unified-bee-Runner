@@ -164,7 +164,7 @@ subprocess.run("export PATH=/koko/system/anaconda/envs/python38/bin:$PATH", shel
 
 path = args.data_path
 # convert the videos
-logging.info("(0) Starting the video conversions, always defaulting to .mp4", shell=True)
+logging.info("(0) Starting the video conversions, always defaulting to .mp4")
 os.chdir(path)
 subprocess.run(["git", "clone","https://github.com/Elias2660/Video_Frame_Counter.git", ">>", "clones.log", "2>&1"], shell = True)
 
