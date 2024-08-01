@@ -2,176 +2,19 @@
 TODO: Work to add common pitfalls
 TODO: Finish the background subtraction
 TODO: ADD options
-TODO: MAKE sure the github stuff always updates
+TODO: Add good basic options to the bash file
 """
 
-import argparse
 import os
 import logging
 import subprocess
+from ArgParser import get_args
 
 format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 
 try:
-    description = """
-    Runs the pipeline that runs the model on the data
-    \n
-    This programs expects the log files to be named of the form logNo.txt, logPos.txt, logNeg.txt
-    \n
-    This script automatically converts the videos to .mp4, and then runs the pipeline on the data, type of video can either be mp4 or h264
-    \n
-    This program also expects that you are running this on the ilab servers, with the anaconda environment of
-    /koko/system/anaconda/envs/python38/bin:$PATH and /koko/system/anaconda/envs/python39/bin:$PATH
-    \n\n\n\n\n\n\n\n
-
-
-
-    One file to rule them all,
-    one file to find them,
-    One file to bring them all,
-    and in the data directory train them;
-    In the Land of ilab where the shadows lie.
-    """
-
-    # truncating the log file
-
-    parser = argparse.ArgumentParser(description=description)
-    parser.add_argument(
-        "--data_path",
-        type=str,
-        help='Path to the data, default "."',
-        default=".",
-        required=False,
-    )
-    parser.add_argument(
-        "--start",
-        type=int,
-        help="(unifier)Start the pipeline at the given step, default 0",
-        default=0,
-        required=False,
-    )
-    parser.add_argument(
-        "--end",
-        type=int,
-        help="(unifier)end the pipeline at the given step, default 6 (will not stop)",
-        default=6,
-        required=False,
-    )
-    # for background subtraction
-    parser.add_argument(
-        "--background-subtraction-type",
-        choices=["MOG2", "KNN"],
-        required=False,
-        default=None,
-        type=str,
-        help="(background subtraction)Background subtraction type to use, default None, you can either choose MOG2 or KNN",
-    )
-    # for make_validation_training
-    parser.add_argument(
-        "--width",
-        type=int,
-        help="(splitting the data) Width of the images, default 960",
-        default=960,
-        required=False,
-    )
-    parser.add_argument(
-        "--height",
-        type=int,
-        help="(splitting the data) Height of the images, default 720",
-        default=720,
-        required=False,
-    )
-
-    # for sampling
-    parser.add_argument(
-        "--number-of-samples",
-        type=int,
-        help="(sampling)the number of samples max that will be gathered by the sampler, defalt=40000",
-        default=40000,
-    )
-    parser.add_argument(
-        "--max-workers-video-sampling",
-        type=int,
-        help="(sampling)The number of workers to use for the multiprocessing of the sampler, default=15",
-        default=10,
-    )
-    parser.add_argument(
-        "--frames-per-sample",
-        type=int,
-        help="(sampling, splitting the data)The number of frames per sample, default=1",
-        default=1,
-    )
-    parser.add_argument(
-        "--normalize",
-        type=bool,
-        help="(sampling) normalize the images, default=True",
-        default=True,
-    )
-    parser.add_argument(
-        "--out-channels",
-        type=int,
-        help="(sampling) The number of output channels, default=1",
-        default=1,
-    )
-    parser.add_argument(
-        "--k",
-        type=int,
-        help="(making the splits) Number of folds for cross validation, default 3",
-        default=3,
-        required=False,
-    )
-    parser.add_argument(
-        "--model",
-        type=str,
-        help="(making the splits) model to use, default alexnet",
-        default="alexnet",
-        required=False,
-    )
-
-    # CREATING THE DATASET
-    parser.add_argument(
-        "--files",
-        type=str,
-        help="(dataset creation) name of the log files that one wants to use, default logNo.txt, logNeg.txt, logPos.txt",
-        default="logNo.txt, logPos.txt, logNeg.txt",
-    )
-    parser.add_argument(
-        "--fps",
-        type=int,
-        help="(dataset creation) frames per second, default 25",
-        default=25,
-    )
-    parser.add_argument(
-        "--starting-frame",
-        type=int,
-        help="(dataset creation) starting frame, default 1",
-        default=1,
-    )
-    parser.add_argument(
-        "--frame-interval",
-        type=int,
-        help="(dataset creation) space between frames, default 0",
-        default=0,
-    )
-
-    parser.add_argument(
-        "--seed",
-        type=str,
-        default="01011970",
-        help="Seed to use for randominizing the data sets, default: 01011970",
-    )
-
-    # ? not used RN
-    # parser.add_argument(
-    #     "--training-script-file",
-    #     type=str,
-    #     required=False,
-    #     default="training-run",
-    #     help="Name for the training script file, default: training-run",
-    # )
-
-    args = parser.parse_args()
+    args = get_args()
 
     # getting the path working
     subprocess.run(
@@ -219,6 +62,10 @@ if args.start <= 0 and args.end >= 0:
             to_truncate.truncate(0)
             to_truncate.close()
 
+        if "Video_Frame_Counter" in file_list:
+            subprocess.run("rm -rf Video_Frame_Counter", shell=True)
+
+        arguments = f"--max-workers {args.max_workers_frame_counter}"
         if contains_h264 and contains_mp4:
             raise "Both types of file are in this directory, please remove one"
         elif contains_h264:
@@ -226,13 +73,13 @@ if args.start <= 0 and args.end >= 0:
                 "Converting .h264 to .mp4, old h264 files can be found in the h264_files folder"
             )
             subprocess.run(
-                "python Video_Frame_Counter/h264tomp4.py >> CONVERSION_STEP_0.log 2>&1",
+                f"python Video_Frame_Counter/h264tomp4.py {arguments} >> CONVERSION_STEP_0.log 2>&1",
                 shell=True,
             )
         elif contains_mp4:
             logging.info("No conversion needed, making counts.csv")
             subprocess.run(
-                "python Video_Frame_Counter/make_counts.py >> CONVERSION_STEP_0.log 2>&1",
+                f"python Video_Frame_Counter/make_counts.py {arguments} >> CONVERSION_STEP_0.log 2>&1",
                 shell=True,
             )
         else:
@@ -274,12 +121,19 @@ if args.start <= 2 and args.end >= 2:
             or file.strip() == "logNeg.txt"
         ]
         logging.info(f"Creating the dataset with the files: {log_list}")
+
+        if "Dataset_Creator" in file_list:
+            subprocess.run("rm -rf Dataset_Creator", shell=True)
+
         subprocess.run(
             "git clone https://github.com/Elias2660/Dataset_Creator.git >> CLONES.log 2>&1",
             shell=True,
         )
-        string_log_list = ",".join(log_list).strip().replace(" ", "")
-
+        if args.files is None:
+            string_log_list = ",".join(log_list).strip().replace(" ", "")
+        else:
+            string_log_list = args.files
+        
         logging.info("Truncating the MAKE_DATASET_2.log to zero, if it exists")
         if "MAKE_DATASET_2.log" in file_list:
             to_truncate = open("MAKE_DATASET_2.log", "r+")
@@ -299,6 +153,10 @@ logging.info("(3) Splitting up the data")
 if args.start <= 3 and args.end >= 3:
     try:
         # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
+
+        if "working_bee_analysis" in file_list:
+            subprocess.run("rm -rf working_bee_analysis", shell=True)
+
         BEE_ANALYSIS_CLONE = "https://github.com/Elias2660/working_bee_analysis.git"
         subprocess.run(f"git clone {BEE_ANALYSIS_CLONE} >> CLONES.log 2>&1", shell=True)
         dir_name = BEE_ANALYSIS_CLONE.split(".")[1].strip().split("/")[-1].strip()
@@ -310,7 +168,7 @@ if args.start <= 3 and args.end >= 3:
             to_truncate.truncate(0)
             to_truncate.close()
 
-        arguments = f"--k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --height {args.height} --path_to_file {dir_name} --frames_per_sample {args.frames_per_sample}"
+        arguments = f"--k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --height {args.height} --path_to_file {dir_name} --frames_per_sample {args.frames_per_sample} --crop-x-offset {args.crop_x_offset} --crop-y-offset {args.crop_y_offset} --only_split {args.only_split} --training_only {args.training_only}"
         subprocess.run(
             f"python {dir_name}/make_validation_training.py {arguments} >> DATASET_SPLIT_3.log 2>&1",
             shell=True,
@@ -323,7 +181,10 @@ logging.info("(4) Starting the tar sampling")
 if args.start <= 4 and args.end >= 4:
     try:
         subprocess.run("python Dataset_Creator/dataset_checker.py", shell=True)
-        #
+
+        if "VideoSamplerRewrite" in file_list:
+            subprocess.run("rm -rf VideoSamplerRewrite", shell=True)
+
         subprocess.run("export MKL_NUM_THREADS=1", shell=True)
         subprocess.run("export NUMEXPR_NUM_THREADS=1", shell=True)
         subprocess.run(
@@ -334,8 +195,7 @@ if args.start <= 4 and args.end >= 4:
             shell=True,
         )
 
-        # ! No need to truncate because the Dataprep package already truncates
-
+        # ? No need to truncate because the Dataprep package already truncates
         subprocess.run("chmod -R 777 . >> chmoding.log 2>&1", shell=True)
         arguments = f"--frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling}"
         subprocess.run(
