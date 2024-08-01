@@ -170,7 +170,7 @@ if args.start <= 3 and args.end >= 3:
             to_truncate.truncate(0)
             to_truncate.close()
 
-        arguments = f"--k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --height {args.height} --path_to_file {dir_name} --frames_per_sample {args.frames_per_sample} --crop-x-offset {args.crop_x_offset} --crop-y-offset {args.crop_y_offset} --only_split {args.only_split} --training_only {args.training_only}"
+        arguments = f"--k {args.k} --model {args.model} --seed {args.seed} --width {args.width} --height {args.height} --path_to_file {dir_name} --frames_per_sample {args.frames_per_sample} --crop_x_offset {args.crop_x_offset} --crop_y_offset {args.crop_y_offset} --only_split {args.only_split} --training_only {args.training_only}"
         subprocess.run(
             f"python {dir_name}/make_validation_training.py {arguments} >> DATASET_SPLIT_3.log 2>&1",
             shell=True,
