@@ -91,7 +91,7 @@ if args.start <= 0 and args.end >= 0:
             to_truncate.truncate(0)
             to_truncate.close()
 
-        subprocess.run("chmod -R 777 . >> chmoding.log >> 2>&1", shell=True)
+        subprocess.run("chmod -R 777 . >> chmoding.log 2>&1", shell=True)
     except Exception as e:
         logging.error(f"Error: {e}")
         raise "Something went wrong in step 0"
@@ -215,9 +215,9 @@ if args.start <= 5 and args.end >= 5:
         Additionally, a big problem that can come up is that the wrong python environment is being used. It's possible that you might have to switch from python38 to 39, or vice versa
         """
         logging.info("")
-        subprocess.run("chmod -R 777 . >> chmoding.log >> 2>&1", shell=True)
+        subprocess.run("chmod -R 777 . >> chmoding.log 2>&1", shell=True)
         subprocess.run(f"./training-run.sh")
-        subprocess.run("chmod -R 777 . >> chmoding.log >> 2>&1", shell=True)
+        subprocess.run("chmod -R 777 . >> chmoding.log 2>&1", shell=True)
 
         logging.info("Pipeline complete, training is occuring")
     except Exception as e:
