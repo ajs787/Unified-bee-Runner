@@ -64,5 +64,6 @@ sbatch -x [servers, such as server1,server2] Unified-bee-Runner/Unifier_Run.sh
 
 Contributions are welcome! Please open an issue or submit a pull request.
 
-License
-This project is licensed under the MIT License.
+## License
+
+This project is licensed under the [MIT License](LICENSE).
