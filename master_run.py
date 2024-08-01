@@ -45,6 +45,9 @@ if args.start > args.end:
 #  if the videos a .h264, convert to .mp4, else, just make a counts.txt
 if args.start <= 0 and args.end >= 0:
     try:
+        if "Video_Frame_Counter" in file_list:
+            subprocess.run("rm -rf Video_Frame_Counter", shell=True)
+            
         subprocess.run(
             "git clone https://github.com/Elias2660/Video_Frame_Counter.git >> CLONES.log 2>&1",
             shell=True,
@@ -62,8 +65,7 @@ if args.start <= 0 and args.end >= 0:
             to_truncate.truncate(0)
             to_truncate.close()
 
-        if "Video_Frame_Counter" in file_list:
-            subprocess.run("rm -rf Video_Frame_Counter", shell=True)
+    
 
         arguments = f"--max-workers {args.max_workers_frame_counter}"
         if contains_h264 and contains_mp4:
