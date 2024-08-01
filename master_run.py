@@ -117,7 +117,7 @@ if args.start <= 1 and args.end >= 1:
             
             subprocess.run("git clone https://github.com/Elias2660/Video_Subtractions.git >> CLONES.log 2>&1", shell=True)
             
-            arguments = f"--subtractor {args.background_subtraction_type} --max-workers {args.max_workers_subtraction}"
+            arguments = f"--subtractor {args.background_subtraction_type} --max-workers {args.max_workers_background_subtraction}"
             subprocess.run(f"python Video_Subtractions/Convert.py {arguments} >> SUBTRACTION_STEP_1.log 2>&1", shell=True)
         
         
