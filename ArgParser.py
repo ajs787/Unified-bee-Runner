@@ -2,28 +2,25 @@ import argparse
 
 def get_args() :
     description = """
-    Runs the pipeline that runs the model on the data
+    Runs the pipeline that runs the model on the data.
     \n
-    This programs expects the log files to be named of the form logNo.txt, logPos.txt, logNeg.txt
+    This programs expects the log files to be named of the form logNo.txt, logPos.txt, logNeg.txt.
     \n
-    This script automatically converts the videos to .mp4, and then runs the pipeline on the data, type of video can either be mp4 or h264
+    This script automatically converts the videos to .mp4, and then runs the pipeline on the data, type of video can either be mp4 or h264.
     \n
     This program also expects that you are running this on the ilab servers, with the anaconda environment of
-    /koko/system/anaconda/envs/python38/bin:$PATH and /koko/system/anaconda/envs/python39/bin:$PATH
+    /koko/system/anaconda/envs/python38/bin:$PATH and /koko/system/anaconda/envs/python39/bin:$PATH.
     \n\n\n\n\n\n\n\n
-
-
-
-    One file to rule them all,
+    """
+    poem = """    One file to rule them all,
     one file to find them,
     One file to bring them all,
     and in the data directory train them;
-    In the Land of ilab where the shadows lie.
-    """
+    In the Land of ilab where the shadows lie."""
 
     # truncating the log file
 
-    parser = argparse.ArgumentParser(description=description)
+    parser = argparse.ArgumentParser(description=description, epilog=poem)
     parser.add_argument(
         "--data_path",
         type=str,
@@ -117,12 +114,6 @@ def get_args() :
     )
 
     # CREATING THE DATASET
-    parser.add_argument(
-        "--files",
-        type=str,
-        help="(dataset creation) name of the log files that one wants to use, default logNo.txt, logNeg.txt, logPos.txt",
-        default="logNo.txt, logPos.txt, logNeg.txt",
-    )
     parser.add_argument(
         "--fps",
         type=int,
