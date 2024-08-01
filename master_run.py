@@ -3,6 +3,8 @@ TODO: Work to add common pitfalls
 TODO: Finish the background subtraction
 TODO: ADD options
 TODO: Add good basic options to the bash file
+
+TODO: make sure everything executes
 """
 
 import os
@@ -47,7 +49,7 @@ if args.start <= 0 and args.end >= 0:
     try:
         if "Video_Frame_Counter" in file_list:
             subprocess.run("rm -rf Video_Frame_Counter", shell=True)
-            
+
         subprocess.run(
             "git clone https://github.com/Elias2660/Video_Frame_Counter.git >> CLONES.log 2>&1",
             shell=True,
@@ -64,8 +66,6 @@ if args.start <= 0 and args.end >= 0:
             to_truncate = open("CONVERSION_STEP_0.log", "r+")
             to_truncate.truncate(0)
             to_truncate.close()
-
-    
 
         arguments = f"--max-workers {args.max_workers_frame_counter}"
         if contains_h264 and contains_mp4:
@@ -103,9 +103,25 @@ logging.info("(1) Starting the background subtraction")
 
 if args.start <= 1 and args.end >= 1:
     try:
-        # TODO create the background subtraction
         if args.background_subtraction_type is not None:
             logging.info("Starting the background subtraction")
+            # truncating the subtraction logging file
+            if "SUBTRACTION_STEP_1.log" in file_list:
+                to_truncate = open("SUBTRACTION_STEP_1.log", "r+")
+                to_truncate.truncate(0)
+                to_truncate.close()
+            
+            # removing the background subtraction folder if it exists
+            if "Video_Subtractions" in file_list:
+                subprocess.run("rm -rf Video_Subtractions", shell=True)
+            
+            subprocess.run("git clone https://github.com/Elias2660/Video_Subtractions.git >> CLONES.log 2>&1", shell=True)
+            
+            arguments = f"--subtractor {args.background_subtraction_type} --max-workers {args.max_workers_subtraction}"
+            subprocess.run(f"python Video_Subtractions/Convert.py {arguments} >> SUBTRACTION_STEP_1.log 2>&1", shell=True)
+        
+        
+        
         else:
             logging.info("No background subtraction type given, skipping this step")
     except Exception as e:
@@ -135,7 +151,7 @@ if args.start <= 2 and args.end >= 2:
             string_log_list = ",".join(log_list).strip().replace(" ", "")
         else:
             string_log_list = args.files
-        
+
         logging.info("Truncating the MAKE_DATASET_2.log to zero, if it exists")
         if "MAKE_DATASET_2.log" in file_list:
             to_truncate = open("MAKE_DATASET_2.log", "r+")

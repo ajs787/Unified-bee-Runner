@@ -181,5 +181,13 @@ def get_args() :
         default=20,
         required=False,
     )
+    
+    parser.add_argument(
+        "--max-workers-background-subtraction",
+        type=int,
+        help="(background subtraction) The number of workers to use for the multiprocessing of the background subtraction, default=10",
+        default=10,
+        required=False,
+    )
     args = parser.parse_args()
     return args
