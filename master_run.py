@@ -1,8 +1,5 @@
 """
 TODO: Work to add common pitfalls
-TODO: Finish the background subtraction
-TODO: ADD options
-TODO: Add good basic options to the bash file
 
 TODO: make sure everything executes
 """
@@ -39,13 +36,13 @@ except Exception as e:
     logging.error(f"Error: {e}")
     raise "Something went wrong in the beginning"
 # convert the videos
-logging.info("(0) Starting the video conversions, always defaulting to .mp4")
 
 if args.start > args.end:
     raise "You can't have the start be higher than the end"
 
-#  if the videos a .h264, convert to .mp4, else, just make a counts.txt
+#  if the videos a .h264, convert to .mp4, else, just make a counts.csv
 if args.start <= 0 and args.end >= 0:
+    logging.info("(0) Starting the video conversions, always defaulting to .mp4")
     try:
         if "Video_Frame_Counter" in file_list:
             subprocess.run("rm -rf Video_Frame_Counter", shell=True)
@@ -97,11 +94,14 @@ if args.start <= 0 and args.end >= 0:
     except Exception as e:
         logging.error(f"Error: {e}")
         raise "Something went wrong in step 0"
+else:
+    logging.info(
+        f"Skipping step 0, given the start ({args.start}) and end ({args.end}) values"
+    )
 
-
-logging.info("(1) Starting the background subtraction")
 
 if args.start <= 1 and args.end >= 1:
+    logging.info("(1) Starting the background subtraction")
     try:
         if args.background_subtraction_type is not None:
             logging.info("Starting the background subtraction")
@@ -110,26 +110,34 @@ if args.start <= 1 and args.end >= 1:
                 to_truncate = open("SUBTRACTION_STEP_1.log", "r+")
                 to_truncate.truncate(0)
                 to_truncate.close()
-            
+
             # removing the background subtraction folder if it exists
             if "Video_Subtractions" in file_list:
                 subprocess.run("rm -rf Video_Subtractions", shell=True)
-            
-            subprocess.run("git clone https://github.com/Elias2660/Video_Subtractions.git >> CLONES.log 2>&1", shell=True)
-            
+
+            subprocess.run(
+                "git clone https://github.com/Elias2660/Video_Subtractions.git >> CLONES.log 2>&1",
+                shell=True,
+            )
+
             arguments = f"--subtractor {args.background_subtraction_type} --max-workers {args.max_workers_background_subtraction}"
-            subprocess.run(f"python Video_Subtractions/Convert.py {arguments} >> SUBTRACTION_STEP_1.log 2>&1", shell=True)
-        
-        
-        
+            subprocess.run(
+                f"python Video_Subtractions/Convert.py {arguments} >> SUBTRACTION_STEP_1.log 2>&1",
+                shell=True,
+            )
+
         else:
             logging.info("No background subtraction type given, skipping this step")
     except Exception as e:
         logging.error(f"Error: {e}")
         raise "Something went wrong in step 1"
+else:
+    logging.info(
+        f"Skipping step 1, given the start ({args.start}) and end ({args.end}) values"
+    )
 
-logging.info("(2) Starting the dataset creation")
 if args.start <= 2 and args.end >= 2:
+    logging.info("(2) Starting the dataset creation")
     try:
         log_list = [
             file.strip()
@@ -166,6 +174,10 @@ if args.start <= 2 and args.end >= 2:
     except Exception as e:
         logging.error(f"Error: {e}")
         raise "Something went wrong in step 2"
+else:
+    logging.info(
+        f"Skipping step 2, given the start ({args.start}) and end ({args.end}) values"
+    )
 
 logging.info("(3) Splitting up the data")
 if args.start <= 3 and args.end >= 3:
@@ -198,6 +210,10 @@ if args.start <= 3 and args.end >= 3:
     except Exception as e:
         logging.error(f"Error: {e}")
         raise "Something went wrong in step 3"
+else:
+    logging.info(
+        f"Skipping step 3, given the start ({args.start}) and end ({args.end}) values"
+    )
 
 logging.info("(4) Starting the tar sampling")
 if args.start <= 4 and args.end >= 4:
@@ -227,6 +243,10 @@ if args.start <= 4 and args.end >= 4:
     except Exception as e:
         logging.error(f"Error: {e}")
         raise "Something went wrong in step 4"
+else:
+    logging.info(
+        f"Skipping step 4, given the start ({args.start}) and end ({args.end}) values"
+    )
 
 logging.info("(5) Starting the model training")
 if args.start <= 5 and args.end >= 5:
@@ -245,3 +265,7 @@ if args.start <= 5 and args.end >= 5:
     except Exception as e:
         logging.error(f"Error: {e}")
         raise "Something went wrong in step 5"
+else:
+    logging.info(
+        f"Skipping step 5, given the start ({args.start}) and end ({args.end}) values"
+    )

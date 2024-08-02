@@ -1,6 +1,48 @@
 import argparse
 
-def get_args() :
+"""
+ArgParser.py
+
+This module is responsible for parsing command-line arguments for the pipeline script. It uses the argparse library to define and handle various parameters required for different stages of the pipeline.
+
+Functions:
+    - get_args: Parses and returns the command-line arguments.
+
+Command-line Arguments:
+    - --data_path: Path to the data, default is ".".
+    - --start: Start the pipeline at the given step, default is 0.
+    - --end: End the pipeline at the given step, default is 6.
+    - --background-subtraction-type: Background subtraction type to use, choices are "MOG2" or "KNN", default is None.
+    - --width: Width of the images, default is 960.
+    - --height: Height of the images, default is 720.
+    - --number-of-samples: The number of samples max that will be gathered by the sampler, default is 40000.
+    - --max-workers-video-sampling: The number of workers to use for the multiprocessing of the sampler, default is 10.
+    - --frames-per-sample: The number of frames per sample, default is 1.
+    - --normalize: Normalize the images, default is True.
+    - --out-channels: The number of output channels, default is 1.
+    - --k: Number of folds for cross-validation, default is 3.
+    - --model: Model to use, default is "alexnet".
+    - --fps: Frames per second, default is 25.
+    - --starting-frame: Starting frame, default is 1.
+    - --frame-interval: Space between frames, default is 0.
+    - --seed: Seed to use for randomizing the data sets, default is "01011970".
+    - --only_split: Set to finish after splitting the CSV, default is False.
+    - --crop_x_offset: The offset (in pixels) of the crop location on the original image in the x dimension, default is 0.
+    - --crop_y_offset: The offset (in pixels) of the crop location on the original image in the y dimension, default is 0.
+    - --training_only: Only generate the training set files, default is False.
+    - --files: Name of the log files that one wants to use, default is None.
+    - --max-workers-frame-counter: The number of workers to use for the multiprocessing of the frame counter, default is 20.
+    - --max-workers-background-subtraction: The number of workers to use for the multiprocessing of the background subtraction, default is 10.
+
+Usage:
+    This script is intended to be used as part of a larger pipeline. It is typically invoked from the command line or another script, such as master_run.py.
+
+Example:
+    python ArgParser.py --data_path /path/to/data --start 0 --end 6 --width 960 --height 720
+
+"""
+
+def get_args():
     description = """
     Runs the pipeline that runs the model on the data.
     \n
@@ -181,7 +223,7 @@ def get_args() :
         default=20,
         required=False,
     )
-    
+
     parser.add_argument(
         "--max-workers-background-subtraction",
         type=int,
