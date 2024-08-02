@@ -120,7 +120,7 @@ def get_args():
         "--max-workers-video-sampling",
         type=int,
         help="(sampling)The number of workers to use for the multiprocessing of the sampler, default=15",
-        default=10,
+        default=8,
     )
     parser.add_argument(
         "--frames-per-sample",
