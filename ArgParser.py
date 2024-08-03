@@ -231,5 +231,11 @@ def get_args():
         default=10,
         required=False,
     )
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        help="(training) The number of epochs to train the model, default=10",
+        default=10,
+    )
     args = parser.parse_args()
     return args
