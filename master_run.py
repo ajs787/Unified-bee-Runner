@@ -258,7 +258,7 @@ if args.start <= 5 and args.end >= 5:
         """
         logging.info("")
         subprocess.run("chmod -R 777 . >> chmoding.log 2>&1", shell=True)
-        subprocess.run("training-run.sh", shell = True)
+        subprocess.run("./training-run.sh", shell = True)
         subprocess.run("chmod -R 777 . >> chmoding.log 2>&1", shell=True)
 
         logging.info("Pipeline complete, training is occuring")
