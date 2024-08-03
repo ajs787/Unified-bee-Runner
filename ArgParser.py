@@ -42,6 +42,7 @@ Example:
 
 """
 
+
 def get_args():
     description = """
     Runs the pipeline that runs the model on the data.
@@ -237,5 +238,36 @@ def get_args():
         help="(training) The number of epochs to train the model, default=10",
         default=10,
     )
+    parser.add_argument(
+        "--crop",
+        action="store_true",
+        help="(sampling) Crop the images to the correct size",
+        default=False,
+    )
+    parser.add_argument(
+        "--y-offset",
+        type=int,
+        help="The y offset for the crop, default=0",
+        default=0,
+    )
+    parser.add_argument(
+        "--out-width",
+        type=int,
+        help="The width of the output image, default=400",
+        default=400,
+    )
+    parser.add_argument(
+        "--out-height",
+        type=int,
+        help="The height of the output image, default=400",
+        default=400,
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Print debug information, activates debug for logger (and other scripts), defgault=False",
+        default=False,
+    )
+
     args = parser.parse_args()
     return args

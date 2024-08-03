@@ -1,7 +1,8 @@
 """
 TODO: Work to add common pitfalls
-
 TODO: make sure everything executes
+TODO: Finish implementing debugging for the pipeline
+TODO: ADD the ability to skip steps
 """
 
 import os
@@ -25,7 +26,8 @@ try:
     os.chdir(path)
     logging.info("truncating BEERUN.log")
     file_list = os.listdir()
-    # truncate the file
+
+    # truncate the file, resets the logs
     if "BEERUN.log" in file_list:
         to_truncate = open("BEERUN.log", "r+")
         to_truncate.truncate(0)
@@ -223,19 +225,26 @@ if args.start <= 4 and args.end >= 4:
         if "VideoSamplerRewrite" in file_list:
             subprocess.run("rm -rf VideoSamplerRewrite", shell=True)
 
+        # restrict the number of subthreads because all our commands use multiprocessing
+        # this is to prevent the system from running out of memory
+        # https://stackoverflow.com/questions/30791550/limit-number-of-threads-in-numpy
         subprocess.run("export MKL_NUM_THREADS=1", shell=True)
         subprocess.run("export NUMEXPR_NUM_THREADS=1", shell=True)
-        subprocess.run(
-            "export OMP_NUM_THREADS=1", shell=True
-        )  # restrict the number of subthreads because all our commands use multiprocessing
+        subprocess.run("export OMP_NUM_THREADS=1", shell=True)
         subprocess.run(
             f"git clone https://github.com/Elias2660/VideoSamplerRewrite.git >> CLONES.log 2>&1",
             shell=True,
         )
 
-        # ? No need to truncate because the Dataprep package already truncates
-        subprocess.run("chmod -R 777 . >> chmoding.log 2>&1", shell=True)
+        # ? No need to truncate dataprep.log because the Dataprep package already truncates
+        subprocess.run(
+            "chmod -R 777 . >> chmoding.log 2>&1", shell=True
+        )  # keep chmoding to make sure that the permissions are correct to sample videos
         arguments = f"--frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling}"
+        if args.crop:
+            arguments += f" --crop --x-offset {args.crop_x_offset} --y-offset {args.crop_y_offset} --out-width {args.width} --out-height {args.height}"
+        if args.debug:
+            arguments += " --debug"
         subprocess.run(
             f"python VideoSamplerRewrite/Dataprep.py {arguments} >> dataprep.log 2>&1",
             shell=True,
@@ -258,7 +267,7 @@ if args.start <= 5 and args.end >= 5:
         """
         logging.info("")
         subprocess.run("chmod -R 777 . >> chmoding.log 2>&1", shell=True)
-        subprocess.run("./training-run.sh", shell = True)
+        subprocess.run("./training-run.sh", shell=True)
         subprocess.run("chmod -R 777 . >> chmoding.log 2>&1", shell=True)
 
         logging.info("Pipeline complete, training is occuring")
