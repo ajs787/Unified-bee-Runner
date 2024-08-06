@@ -225,12 +225,7 @@ if args.start <= 4 and args.end >= 4:
         if "VideoSamplerRewrite" in file_list:
             subprocess.run("rm -rf VideoSamplerRewrite", shell=True)
 
-        # restrict the number of subthreads because all our commands use multiprocessing
-        # this is to prevent the system from running out of memory
-        # https://stackoverflow.com/questions/30791550/limit-number-of-threads-in-numpy
-        subprocess.run("export MKL_NUM_THREADS=1", shell=True)
-        subprocess.run("export NUMEXPR_NUM_THREADS=1", shell=True)
-        subprocess.run("export OMP_NUM_THREADS=1", shell=True)
+
         subprocess.run(
             f"git clone https://github.com/Elias2660/VideoSamplerRewrite.git >> CLONES.log 2>&1",
             shell=True,
