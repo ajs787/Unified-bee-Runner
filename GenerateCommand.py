@@ -1,0 +1,1 @@
+# create a good slurm command for the user
