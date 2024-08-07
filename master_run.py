@@ -9,6 +9,7 @@ import os
 import logging
 import subprocess
 from ArgParser import get_args
+from test_steps import test_step_0, test_step_1, test_step_2, test_step_3, test_step_4
 
 format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -244,9 +245,13 @@ if args.start <= 4 and args.end >= 4:
             f"python VideoSamplerRewrite/Dataprep.py {arguments} >> dataprep.log 2>&1",
             shell=True,
         )
+        
     except Exception as e:
         logging.error(f"Error: {e}")
         raise "Something went wrong in step 4"
+    finally:
+        test_step_4("VideoSamplerRewrite")
+        
 else:
     logging.info(
         f"Skipping step 4, given the start ({args.start}) and end ({args.end}) values"
