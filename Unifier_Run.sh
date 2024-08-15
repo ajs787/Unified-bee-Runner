@@ -9,6 +9,7 @@
 # --frames-per-sample: number of frames to take for each sample
 # --start: the step with which to start
 # --end: the step with which to end
+# --gpus: the number of gpus to use
 
 # Additionally, you can run the following command to get the help menu
 # python Unified-bee-Runner/master_run.py --help
@@ -20,4 +21,4 @@ export MKL_NUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1
 export OMP_NUM_THREADS=1
 
-python Unified-bee-Runner/master_run.py --height 720 --width 960 --number-of-samples 40000 --frames-per-sample 5 >>BEERUN.log 2>&1
+python Unified-bee-Runner/master_run.py --height 720 --width 960 --number-of-samples 40000 --frames-per-sample 5 --gpus 2 >>BEERUN.log 2>&1
