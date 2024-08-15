@@ -32,17 +32,7 @@ Unified Bee Runner is a pipeline for processing and analyzing bee-related datase
 
 ## Usage
 
-To run the pipeline, use the provided shell script:
-
-```sh
-./Unifier_Run.sh
-```
-
-This script will execute the master_run.py script with default parameters.
-
-## Usage for Slurm
-
-You can also use slurm if you are in the Rutgers bee project.
+To run the pipeline, use the provided shell script in SLURM!!!!! If you don't want to, please copy the Unifier_Run.sh file and execute it in your command line:
 
 Run `squeue -u <user>` to be able to find you current jobs and the servers that they are running on
 
