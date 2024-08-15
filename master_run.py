@@ -1,8 +1,21 @@
 """
+Unified Bee Runner Pipeline Script
+
+This script orchestrates the entire pipeline for processing and analyzing bee-related datasets. The pipeline is divided into several steps, each performing a specific task. The steps can be controlled using the `--start` and `--end` arguments, allowing users to run specific parts of the pipeline.
+
+Steps:
+0. Video Conversion: Converts .h264 videos to .mp4 format.
+1. Background Subtraction: Applies background subtraction to the videos.
+2. Dataset Creation: Clones the Dataset_Creator repository and creates the dataset.
+3. Data Splitting: Splits the data into training and testing sets.
+4. Video Sampling: Clones the VideoSamplerRewrite repository and samples the video frames.
+5. Model Training: Runs the model training script.
+
+Usage:
+- `--start`: The step with which to start the pipeline.
+- `--end`: The step with which to end the pipeline.
 TODO: Work to add common pitfalls
-TODO: make sure everything executes
 TODO: Finish implementing debugging for the pipeline
-TODO: ADD the ability to skip steps
 """
 
 import os
