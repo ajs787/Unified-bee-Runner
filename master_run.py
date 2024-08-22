@@ -11,7 +11,16 @@ Steps:
 4. Video Sampling: Clones the VideoSamplerRewrite repository and samples the video frames.
 5. Model Training: Runs the model training script.
 
-Usage:
+Chapter System:
+This script is ogranized in chapters, so you can use the start and end flags to run specific chapters. The chapters are as follows:
+1. Video Conversions
+2. Background Subtraction
+3. Dataset Creation
+4. Data Splitting
+5. Video Sampling
+6. Model Training -> this will create slurm jobs given the number of k-folds that you have requested
+
+
 - `--start`: The step with which to start the pipeline.
 - `--end`: The step with which to end the pipeline.
 TODO: Work to add common pitfalls
@@ -61,13 +70,14 @@ if args.start <= 0 and args.end >= 0:
     logging.info("(0) Starting the video conversions, always defaulting to .mp4")
     try:
         if "Video_Frame_Counter" in file_list:
-            subprocess.run("rm -rf Video_Frame_Counter", shell=True)
+            os.rmdir("Video_Frame_Counter")
 
         subprocess.run(
             "git clone https://github.com/Elias2660/Video_Frame_Counter.git >> CLONES.log 2>&1",
             shell=True,
         )
         file_list = os.listdir(path)
+
         contains_h264 = True in [
             ".h264" in file for file in file_list
         ]  # if there is at least a single h264 file
@@ -129,7 +139,7 @@ if args.start <= 1 and args.end >= 1:
 
             # removing the background subtraction folder if it exists
             if "Video_Subtractions" in file_list:
-                subprocess.run("rm -rf Video_Subtractions", shell=True)
+                os.rmdir("Video_Subtractions")
 
             subprocess.run(
                 "git clone https://github.com/Elias2660/Video_Subtractions.git >> CLONES.log 2>&1",
@@ -155,6 +165,7 @@ else:
 if args.start <= 2 and args.end >= 2:
     logging.info("(2) Starting the dataset creation")
     try:
+        # finds the logs, which should be named either logNo, logPos, or logNeg
         log_list = [
             file.strip()
             for file in os.listdir()
@@ -164,8 +175,10 @@ if args.start <= 2 and args.end >= 2:
         ]
         logging.info(f"Creating the dataset with the files: {log_list}")
 
-        if "Dataset_Creator" in file_list:
-            subprocess.run("rm -rf Dataset_Creator", shell=True)
+        if (
+            "Dataset_Creator" in file_list
+        ):  # remove the Dataset_Creator folder if it exists, to keep version updates
+            os.rmdir("Dataset_Creator")
 
         subprocess.run(
             "git clone https://github.com/Elias2660/Dataset_Creator.git >> CLONES.log 2>&1",
@@ -201,7 +214,7 @@ if args.start <= 3 and args.end >= 3:
         # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
 
         if "working_bee_analysis" in file_list:
-            subprocess.run("rm -rf working_bee_analysis", shell=True)
+            os.rmdir("working_bee_analysis")
 
         BEE_ANALYSIS_CLONE = "https://github.com/Elias2660/working_bee_analysis.git"
         subprocess.run(f"git clone {BEE_ANALYSIS_CLONE} >> CLONES.log 2>&1", shell=True)
@@ -237,8 +250,7 @@ if args.start <= 4 and args.end >= 4:
         subprocess.run("python Dataset_Creator/dataset_checker.py", shell=True)
 
         if "VideoSamplerRewrite" in file_list:
-            subprocess.run("rm -rf VideoSamplerRewrite", shell=True)
-
+            os.rmdir("VideoSamplerRewrite")
 
         subprocess.run(
             f"git clone https://github.com/Elias2660/VideoSamplerRewrite.git >> CLONES.log 2>&1",
@@ -258,13 +270,13 @@ if args.start <= 4 and args.end >= 4:
             f"python VideoSamplerRewrite/Dataprep.py {arguments} >> dataprep.log 2>&1",
             shell=True,
         )
-        
+
     except Exception as e:
         logging.error(f"Error: {e}")
         raise "Something went wrong in step 4"
     finally:
         test_step_4("VideoSamplerRewrite")
-        
+
 else:
     logging.info(
         f"Skipping step 4, given the start ({args.start}) and end ({args.end}) values"
