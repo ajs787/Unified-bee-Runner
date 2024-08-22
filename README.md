@@ -2,6 +2,10 @@
 
 Unified Bee Runner is a pipeline for processing and analyzing bee-related datasets. This project includes several steps such as dataset creation, video conversion, data splitting, and model training. The model is meant to run on ilab, and through slurm. 
 
+## Pipeline
+
+![PipelineImage](UnifiedRunImage.png)
+
 ## Table of Contents
 
 - [Installation](#installation)
