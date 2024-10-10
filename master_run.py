@@ -45,13 +45,12 @@ try:
     logging.info("---- Starting the pipeline ----")
     subprocess.run("python -m venv venv", shell=True)
     subprocess.run("source venv/bin/activate", shell=True)
-    subprocess.run("pip install -r requirements.txt", shell=True)
+    subprocess.run("pip install -r requirements.txt >> /dev/null", shell=True)
 
     path = args.data_path
 
     os.chdir(path)
     file_list = os.listdir()
-
     logging.info("(0) Starting the pipeline")
 except Exception as e:
     logging.error(f"Error: {e}")
@@ -174,21 +173,14 @@ if args.start <= 2 and args.end >= 2:
             os.rmdir("Dataset_Creator")
 
         subprocess.run(
-            "git clone https://github.com/Elias2660/Dataset_Creator.git >> dataprep.log 2>&1",
+            "git clone https://github.com/Elias2660/Dataset_Creator.git >> /dev/null",
             shell=True,
         )
-        subprocess.run("pip install -r Dataset_Creator/requirements.txt",
-                       shell=True)
+        subprocess.run("pip install -r Dataset_Creator/requirements.txt >> /dev/null", shell=True)
         if args.files is None:
             string_log_list = ",".join(log_list).strip().replace(" ", "")
         else:
             string_log_list = args.files
-
-        logging.info("Truncating the MAKE_DATASET_2.log to zero, if it exists")
-        if "MAKE_DATASET_2.log" in file_list:
-            to_truncate = open("MAKE_DATASET_2.log", "r+")
-            to_truncate.truncate(0)
-            to_truncate.close()
 
         arguments = f"--files '{string_log_list}' --starting-frame {args.starting_frame} --frame-interval {args.frame_interval}"
         subprocess.run(
