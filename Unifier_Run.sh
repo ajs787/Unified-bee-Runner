@@ -17,8 +17,6 @@
 # restrict the number of subthreads because all our commands use multiprocessing
 # this is to prevent the system from running out of memory
 # https://stackoverflow.com/questions/30791550/limit-number-of-threads-in-numpy
-python3 -m venv venv
-source venv/bin/activate
 
 export MKL_NUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1

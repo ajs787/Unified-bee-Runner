@@ -44,6 +44,8 @@ try:
     args = get_args()
     logging.info("---- Starting the pipeline ----")
     path = args.data_path
+    subprocess.run("python3 -m venv venv", shell=True)
+    subprocess.run("source venv/bin/activate", shell=True)
 
     os.chdir(path)
     file_list = os.listdir()
