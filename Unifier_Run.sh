@@ -17,8 +17,11 @@
 # restrict the number of subthreads because all our commands use multiprocessing
 # this is to prevent the system from running out of memory
 # https://stackoverflow.com/questions/30791550/limit-number-of-threads-in-numpy
+python3 -m venv venv
+source venv/bin/activate
+
 export MKL_NUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1
 export OMP_NUM_THREADS=1
 
-python Unified-bee-Runner/master_run.py --height 720 --width 960 --number-of-samples 1000 --frames-per-sample 5 --gpus 2 >>dataprep.log 2>&1
+python3 Unified-bee-Runner/master_run.py --height 720 --width 960 --number-of-samples 1000 --frames-per-sample 5 --gpus 2 >>dataprep.log 2>&1

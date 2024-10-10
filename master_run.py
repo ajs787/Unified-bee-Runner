@@ -43,10 +43,6 @@ logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 try:
     args = get_args()
     logging.info("---- Starting the pipeline ----")
-    subprocess.run("python -m venv venv", shell=True)
-    subprocess.run("source venv/bin/activate", shell=True)
-    subprocess.run("pip install -r requirements.txt >> /dev/null", shell=True)
-
     path = args.data_path
 
     os.chdir(path)
@@ -97,13 +93,13 @@ if args.start <= 0 and args.end >= 0:
                 "Converting .h264 to .mp4, old h264 files can be found in the h264_files folder"
             )
             subprocess.run(
-                f"python Video_Frame_Counter/h264tomp4.py {arguments} >> dataprep.log 2>&1",
+                f"python3 Video_Frame_Counter/h264tomp4.py {arguments} >> dataprep.log 2>&1",
                 shell=True,
             )
         elif contains_mp4:
             logging.info("No conversion needed, making counts.csv")
             subprocess.run(
-                f"python Video_Frame_Counter/make_counts.py {arguments} >> dataprep.log 2>&1",
+                f"python3 Video_Frame_Counter/make_counts.py {arguments} >> dataprep.log 2>&1",
                 shell=True,
             )
         else:
@@ -141,7 +137,7 @@ if args.start <= 1 and args.end >= 1:
 
             arguments = f"--subtractor {args.background_subtraction_type} --max-workers {args.max_workers_background_subtraction}"
             subprocess.run(
-                f"python Video_Subtractions/Convert.py {arguments} >> dataprep.log 2>&1",
+                f"python3 Video_Subtractions/Convert.py {arguments} >> dataprep.log 2>&1",
                 shell=True,
             )
 
@@ -184,7 +180,7 @@ if args.start <= 2 and args.end >= 2:
 
         arguments = f"--files '{string_log_list}' --starting-frame {args.starting_frame} --frame-interval {args.frame_interval}"
         subprocess.run(
-            f"python Dataset_Creator/Make_Dataset.py {arguments} >> dataprep.log 2>&1",
+            f"python3 Dataset_Creator/Make_Dataset.py {arguments} >> dataprep.log 2>&1",
             shell=True,
         )
     except Exception as e:
@@ -219,7 +215,7 @@ if args.start <= 3 and args.end >= 3:
         if args.training_only:
             arguments += " --training_only"
         subprocess.run(
-            f"python {dir_name}/make_validation_training.py {arguments} >> dataprep.log 2>&1",
+            f"python3 {dir_name}/make_validation_training.py {arguments} >> dataprep.log 2>&1",
             shell=True,
         )
     except Exception as e:
@@ -233,7 +229,7 @@ else:
 logging.info("(4) Starting the tar sampling")
 if args.start <= 4 and args.end >= 4:
     try:
-        subprocess.run("python Dataset_Creator/dataset_checker.py", shell=True)
+        subprocess.run("python3 Dataset_Creator/dataset_checker.py", shell=True)
 
         if "VideoSamplerRewrite" in file_list:
             os.rmdir("VideoSamplerRewrite")
@@ -255,7 +251,7 @@ if args.start <= 4 and args.end >= 4:
         if args.debug:
             arguments += " --debug"
         subprocess.run(
-            f"python VideoSamplerRewrite/Dataprep.py {arguments} >> dataprep.log 2>&1",
+            f"python3 VideoSamplerRewrite/Dataprep.py {arguments} >> dataprep.log 2>&1",
             shell=True,
         )
 
@@ -276,7 +272,7 @@ if args.start <= 5 and args.end >= 5:
         summary = """
         Running model training can be tricky. As this runs, make sure that you're running the correct scripts
 
-        Additionally, a big problem that can come up is that the wrong python environment is being used. It's possible that you might have to switch from python38 to 39, or vice versa
+        Additionally, a big problem that can come up is that the wrong python3 environment is being used. It's possible that you might have to switch from python338 to 39, or vice versa
         """
         logging.info("")
         subprocess.run("chmod -R 777 . >> dataprep.log 2>&1", shell=True)
