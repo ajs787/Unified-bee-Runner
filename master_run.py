@@ -245,7 +245,7 @@ if args.start <= 4 and args.end >= 4:
 
         # ? No need to truncate dataprep.log because the Dataprep package already truncates
         subprocess.run(
-            "chmod -R 777 . >> chmoding.log 2>&1", shell=True
+            "chmod -R 777 . >> /dev/null 2>&1", shell=True
         )  # keep chmoding to make sure that the permissions are correct to sample videos
         arguments = f"--frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling}"
         if args.crop:
