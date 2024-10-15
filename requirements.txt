@@ -27,5 +27,5 @@ sympy==1.13.2
 torch==2.4.1
 torchvision==0.19.1
 typing_extensions==4.12.2
-tzdata==2024.1
+tzdata==2024.2
 webdataset==0.2.100
