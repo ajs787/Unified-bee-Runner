@@ -44,10 +44,12 @@ try:
     args = get_args()
     logging.info("---- Starting the pipeline ----")
     path = args.data_path
+    os.chdir(path)
+    
     subprocess.run("python3 -m venv venv", shell=True)
     subprocess.run("source venv/bin/activate", shell=True)
+    subprocess.run("pip install -r Unified-bee-Runner/requirements.txt", shell=True)
 
-    os.chdir(path)
     file_list = os.listdir()
     logging.info("(0) Starting the pipeline")
 except Exception as e:
