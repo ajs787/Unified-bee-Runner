@@ -22,6 +22,6 @@ export MKL_NUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1
 export OMP_NUM_THREADS=1
 
-export PATH="/usr/bin/python3:$PATH"
+export PATH="/usr/bin/python3:$PATH" # make sure we're all using the same python, a big problems with .bashrcs lol
 
 python3 Unified-bee-Runner/master_run.py --height 720 --width 960 --number-of-samples 1000 --frames-per-sample 5 --gpus 2 >>dataprep.log 2>&1
