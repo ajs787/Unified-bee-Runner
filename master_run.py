@@ -48,11 +48,11 @@ try:
     logging.info("---- Starting the pipeline ----")
     path = args.data_path
     os.chdir(path)
-
     subprocess.run("python3 -m venv venv", shell=True)
-    subprocess.run("source venv/bin/activate", shell=True, executable="/bin/bash")
     subprocess.run(
-        f"pip install -r {os.path.join(DIR_NAME, 'requirements.txt')}", shell=True
+        "source venv/bin/activate && pip install -r requirements.txt >> /dev/null",
+        shell=True,
+        executable="/bin/bash",
     )
 
     file_list = os.listdir()
@@ -74,7 +74,7 @@ if args.start <= 0 and args.end >= 0:
             "---- Installing the requirements for the Video_Frame_Counter ----"
         )
         subprocess.run(
-            f"pip install -r {os.path.join(DIR_NAME, 'Video_Frame_Counter/requirements.txt')}",
+            f"pip install -r {os.path.join(DIR_NAME, 'Video_Frame_Counter/requirements.txt')} >> /dev/null",
             shell=True,
         )
         file_list = os.listdir(path)
@@ -129,9 +129,8 @@ if args.start <= 1 and args.end >= 1:
         if args.background_subtraction_type is not None:
             logging.info("Starting the background subtraction")
 
-
             subprocess.run(
-                f"pip install -r {os.path.join(DIR_NAME,'Video_Subtractions/requirements.txt')}",
+                f"pip install -r {os.path.join(DIR_NAME,'Video_Subtractions/requirements.txt')} >> /dev/null",
                 shell=True,
             )
 
@@ -192,7 +191,7 @@ if args.start <= 3 and args.end >= 3:
         # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
 
         subprocess.run(
-            f"pip install -r {os.path.join(DIR_NAME, 'working_bee_analysis/requirements.txt')}",
+            f"pip install -r {os.path.join(DIR_NAME, 'working_bee_analysis/requirements.txt')} >> /dev/null",
             shell=True,
         )
 
@@ -217,11 +216,12 @@ logging.info("(4) Starting the tar sampling")
 if args.start <= 4 and args.end >= 4:
     try:
         subprocess.run(
-            f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/dataset_checker.py')}", shell=True
+            f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/dataset_checker.py')}",
+            shell=True,
         )
 
         subprocess.run(
-            f"pip install -r {os.path.join(DIR_NAME, 'VideoSamplerRewrite/requirements.txt')}",
+            f"pip install -r {os.path.join(DIR_NAME, 'VideoSamplerRewrite/requirements.txt')} >> /dev/null",
             shell=True,
         )
 
