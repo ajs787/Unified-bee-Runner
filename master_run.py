@@ -201,7 +201,7 @@ if args.start <= 3 and args.end >= 3:
         if args.training_only:
             arguments += " --training_only"
         subprocess.run(
-            f"python3 {os.path.join(DIR_NAME, 'working-bee-analysis/make_validation_training.py')} {arguments} >> dataprep.log 2>&1",
+            f"python3 {os.path.join(DIR_NAME, 'working_bee_analysis/make_validation_training.py')} {arguments} >> dataprep.log 2>&1",
             shell=True,
         )
     except Exception as e:
