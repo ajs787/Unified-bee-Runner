@@ -190,8 +190,6 @@ else:
 logging.info("(3) Splitting up the data")
 if args.start <= 3 and args.end >= 3:
     try:
-        # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
-
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'working_bee_analysis/requirements.txt')} >> /dev/null",
             shell=True,
