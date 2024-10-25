@@ -49,6 +49,8 @@ try:
     path = args.data_path
     os.chdir(path)
     subprocess.run("python3 -m venv venv", shell=True)
+    
+    logging.info("---- Installing some requirements for the pipeline ----")
     subprocess.run(
         f"source venv/bin/activate && pip install -r {os.path.join(DIR_NAME, 'requirements.txt')} >> /dev/null",
         shell=True,
