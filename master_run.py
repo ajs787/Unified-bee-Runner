@@ -50,7 +50,7 @@ try:
     os.chdir(path)
     subprocess.run("python3 -m venv venv", shell=True)
     subprocess.run(
-        f"source venv/bin/activate && pip install -r {os.path.join(DIR_NAME, "requirements.txt")} >> /dev/null",
+        f"source venv/bin/activate && pip install -r {os.path.join(DIR_NAME, 'requirements.txt')} >> /dev/null",
         shell=True,
         executable="/bin/bash",
     )
