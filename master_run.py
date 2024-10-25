@@ -192,7 +192,7 @@ if args.start <= 3 and args.end >= 3:
         # !!! VERY IMPORTANT !!!, change the path_to_file to the path of the file that was created in the last step
 
         subprocess.run(
-            f"pip install -r {os.path.join("working_bee_analysis/requirements.txt")}",
+            f"pip install -r {os.path.join(DIR_NAME, 'working_bee_analysis/requirements.txt')}",
             shell=True,
         )
 
