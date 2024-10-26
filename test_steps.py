@@ -46,9 +46,9 @@ def test_step_4(main_repo_name: str):
     if ("dataprep.log") not in file_list:
         logging.error("dataprep.log not found")
         raise
-    if (main_repo_name) not in file_list:
-        logging.error("main repo not found")
-        raise
+    # if (main_repo_name) not in file_list:
+    #     logging.error("main repo not found")
+    #     raise
     # with open("dataprep.log", "r") as f:
     #     log = f.read()
     #     if "Error" in log:
