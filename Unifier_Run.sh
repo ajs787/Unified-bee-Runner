@@ -28,4 +28,4 @@ cd Unified-bee-Runner
 git submodule update --init --recursive
 cd ..
 
-python3 Unified-bee-Runner/master_run.py --height 720 --width 960 --number-of-samples 1000 --frames-per-sample 5 --gpus 2 >>dataprep.log 2>&1
+python3 Unified-bee-Runner/master_run.py --height 720 --width 960 --number-of-samples 100 --frames-per-sample 5 --gpus 2 >>dataprep.log 2>&1
