@@ -51,15 +51,15 @@ try:
     logging.info("---- Purging all packages ----")
     subprocess.run("xargs pip uninstall -y >> /dev/null", shell=True, executable="/bin/bash")
     
+    logging.info("---- Upgrading pip ----")
+    subprocess.run("pip install --upgrade pip >> /dev/null", shell=True, executable="/bin/bash")
     
     logging.info("---- Installing some requirements for the pipeline ----")
     subprocess.run(
-        f"&pip install -r {os.path.join(DIR_NAME, 'requirements.txt')} >> /dev/null",
+        f"pip install -r {os.path.join(DIR_NAME, 'requirements.txt')} >> /dev/null",
         shell=True,
         executable="/bin/bash",
     )
-    logging.info("---- Upgrading pip ----")
-    subprocess.run("pip install --upgrade pip >> /dev/null", shell=True, executable="/bin/bash")
     file_list = os.listdir()
     logging.info("(0) Starting the pipeline")
 except Exception as e:
