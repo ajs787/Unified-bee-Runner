@@ -48,6 +48,10 @@ try:
     logging.info("---- Starting the pipeline ----")
     path = args.data_path
     os.chdir(path)
+    logging.info("---- Purging all packages ----")
+    subprocess.run("xargs pip uninstall -y >> /dev/null", shell=True, executable="/bin/bash")
+    
+    
     logging.info("---- Installing some requirements for the pipeline ----")
     subprocess.run(
         f"&pip install -r {os.path.join(DIR_NAME, 'requirements.txt')} >> /dev/null",
@@ -56,8 +60,6 @@ try:
     )
     logging.info("---- Upgrading pip ----")
     subprocess.run("pip install --upgrade pip >> /dev/null", shell=True, executable="/bin/bash")
-    logging.info("---- Purging all packages ----")
-    subprocess.run("xargs pip uninstall -y >> /dev/null", shell=True, executable="/bin/bash")
     file_list = os.listdir()
     logging.info("(0) Starting the pipeline")
 except Exception as e:
