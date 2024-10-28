@@ -48,15 +48,16 @@ try:
     logging.info("---- Starting the pipeline ----")
     path = args.data_path
     os.chdir(path)
-    subprocess.run("python3 -m venv venv", shell=True)
-    
     logging.info("---- Installing some requirements for the pipeline ----")
     subprocess.run(
-        f"source venv/bin/activate && pip install -r {os.path.join(DIR_NAME, 'requirements.txt')} >> /dev/null",
+        f"&pip install -r {os.path.join(DIR_NAME, 'requirements.txt')} >> /dev/null",
         shell=True,
         executable="/bin/bash",
     )
-
+    logging.info("---- Upgrading pip ----")
+    subprocess.run("pip install --upgrade pip >> /dev/null", shell=True, executable="/bin/bash")
+    logging.info("---- Purging all packages ----")
+    subprocess.run("xargs pip uninstall -y >> /dev/null", shell=True, executable="/bin/bash")
     file_list = os.listdir()
     logging.info("(0) Starting the pipeline")
 except Exception as e:
@@ -77,7 +78,7 @@ if args.start <= 0 and args.end >= 0:
         )
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'Video_Frame_Counter/requirements.txt')} >> /dev/null",
-            shell=True,
+            shell=True, executable="/bin/bash",
         )
         file_list = os.listdir(path)
 
