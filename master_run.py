@@ -76,7 +76,7 @@ if args.start <= 0 and args.end >= 0:
     try:
 
         logging.debug(
-            "---- Installing the requirements for the Video_Frame_Counter ----"
+            "(0) ---- Installing the requirements for the Video_Frame_Counter ----"
         )
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'Video_Frame_Counter/requirements.txt')} >> /dev/null",
@@ -93,7 +93,7 @@ if args.start <= 0 and args.end >= 0:
 
         arguments = f"--max-workers {args.max_workers_frame_counter}"
 
-        logging.info("---- Running Video Conversions Sections ----")
+        logging.info("(0) ---- Running Video Conversions Sections ----")
 
         if contains_h264 and contains_mp4:
             raise ValueError(
@@ -118,7 +118,7 @@ if args.start <= 0 and args.end >= 0:
                 "Something went wrong with the file typing, as it seems that there are no .h264 or .mp4 files in the directory"
             )
 
-        logging.info("---- Changing Permissions for the Repository----")
+        logging.info("(0) ---- Changing Permissions for the Repository----")
         subprocess.run("chmod -R 777 .", shell=True)
     except Exception as e:
         logging.error(f"Error: {e}")
@@ -132,8 +132,9 @@ if args.start <= 1 and args.end >= 1:
     logging.info("(1) Starting the background subtraction")
     try:
         if args.background_subtraction_type is not None:
-            logging.info("Starting the background subtraction")
-
+            logging.info("(1) Starting the background subtraction")
+            
+            logging.info("(1) ---- Installing the requirements for the Video_Subtractions ----")
             subprocess.run(
                 f"pip install -r {os.path.join(DIR_NAME,'Video_Subtractions/requirements.txt')} >> /dev/null",
                 shell=True,
@@ -166,8 +167,9 @@ if args.start <= 2 and args.end >= 2:
             or file.strip() == "logPos.txt"
             or file.strip() == "logNeg.txt"
         ]
-        logging.info(f"Creating the dataset with the files: {log_list}")
-
+        logging.info(f"(2) Creating the dataset with the files: {log_list}")
+        
+        logging.info("(2) ---- Installing the requirements for the Dataset_Creator ----")
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'Dataset_Creator/requirements.txt')} >> /dev/null",
             shell=True,
@@ -193,6 +195,8 @@ else:
 logging.info("(3) Splitting up the data")
 if args.start <= 3 and args.end >= 3:
     try:
+        logging.info("(3) Starting the data splitting")
+        logging.info("(3) ---- Installing the requirements for the working_bee_analysis ----")
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'working_bee_analysis/requirements.txt')} >> /dev/null",
             shell=True,
@@ -218,11 +222,13 @@ else:
 logging.info("(4) Starting the tar sampling")
 if args.start <= 4 and args.end >= 4:
     try:
+        logging.info("(4) Starting the video sampling")
+        
         subprocess.run(
             f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/dataset_checker.py')}",
             shell=True,
         )
-
+        logging.info("(4) ---- Installing the requirements for the VideoSamplerRewrite")
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'VideoSamplerRewrite/requirements.txt')} >> /dev/null",
             shell=True,
