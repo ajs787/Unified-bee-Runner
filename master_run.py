@@ -38,8 +38,7 @@ from test_steps import test_step_2
 from test_steps import test_step_3
 from test_steps import test_step_4
 
-format = "%(asctime)s: %(message)s"
-logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
+logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S")
 
 DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 
