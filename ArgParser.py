@@ -247,8 +247,9 @@ def get_args():
     parser.add_argument(
         "--equalize-samples",
         action="store_true",
-        help="(sampling) Equalize the samples",
+        help="(sampling) Equalize the samples so that each class has the same number of samples",
         default=False,
+        
     )
     parser.add_argument(
         "--y-offset",

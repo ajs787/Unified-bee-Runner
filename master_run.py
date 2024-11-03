@@ -241,6 +241,8 @@ if args.start <= 4 and args.end >= 4:
             arguments += f" --crop --x-offset {args.crop_x_offset} --y-offset {args.crop_y_offset} --out-width {args.width} --out-height {args.height}"
         if args.debug:
             arguments += " --debug"
+        if args.equalize_samples:
+            arguments += " --equalize-samples"
         subprocess.run(
             f"python3 {os.path.join(DIR_NAME, 'VideoSamplerRewrite/Dataprep.py')} {arguments} >> dataprep.log 2>&1",
             shell=True,
