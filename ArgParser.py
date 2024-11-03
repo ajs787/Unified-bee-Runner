@@ -155,7 +155,7 @@ def get_args():
         default="alexnet",
         required=False,
     )
-
+    
     # CREATING THE DATASET
     parser.add_argument(
         "--fps",
@@ -245,6 +245,12 @@ def get_args():
         default=False,
     )
     parser.add_argument(
+        "--equalize-samples",
+        action="store_true",
+        help="(sampling) Equalize the samples",
+        default=False,
+    )
+    parser.add_argument(
         "--y-offset",
         type=int,
         help="The y offset for the crop, default=0",
@@ -274,6 +280,7 @@ def get_args():
         help="The number of gpus to use for training, default=1",
         default=1,
     )
+    
 
     args = parser.parse_args()
     return args
