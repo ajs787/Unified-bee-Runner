@@ -19,8 +19,7 @@ Unified Bee Runner is a pipeline for processing and analyzing bee-related datase
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/yourusername/Unified-Bee-Runner.git
-   cd Unified-Bee-Runner
+   git clone https://github.com/Elias2660/Unified-bee-Runner.git
    ```
 
 ## Usage
@@ -28,6 +27,8 @@ Unified Bee Runner is a pipeline for processing and analyzing bee-related datase
 To run the pipeline, use the provided shell script in SLURM. If you don't want to, please copy the Unifier_Run.sh file and execute it in your command line:
 
 Run `squeue -u <user>` to be able to find your current jobs and the servers that they are running on.
+
+You can edit the Unifier_Run file with the settings that you desire. You can check the settings by running `python3 Unified-bee-Runner/master_run.py -h` or checking in [ArgParser.py](ArgParser.py) for the arguements that can be used. Not all of them work, including those that crop, and this pipeline is still working through many bugs.
 
 Then run:
 
