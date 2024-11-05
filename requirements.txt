@@ -27,7 +27,7 @@ setuptools==75.2.0
 six==1.16.0
 sympy==1.13.1
 torch==2.5.0
-torchvision==0.20.0
+torchvision==0.20.1
 typing_extensions==4.12.2
 tzdata==2024.2
 webdataset==0.2.100
