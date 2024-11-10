@@ -218,6 +218,20 @@ def get_args():
         required=False,
     )
     parser.add_argument(
+        "--each-video-one-class",
+        help="(dataset creation) the case where each video is one class; a special workflow",
+        action="store_true",
+        default=False,
+        required=False,
+    )
+    parser.add_argument(
+        "--end-frame-buffer",
+        type=int,
+        default=0,
+        help="(dataset creation) the number of frames to buffer at the end of the video, default=0",
+        required=False,
+    )
+    parser.add_argument(
         "--max-workers-frame-counter",
         type=int,
         help="(frame counting) The number of workers to use for the multiprocessing of the frame counter, default=20",

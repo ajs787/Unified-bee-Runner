@@ -167,6 +167,7 @@ if args.start <= 2 and args.end >= 2:
     logging.info("(2) Starting the dataset creation")
     try:
         # finds the logs, which should be named either logNo, logPos, or logNeg
+        # TODO: add in the ability to make sure log list can work with non logNo/Pos/Neg files
         log_list = [
             file.strip()
             for file in os.listdir()
@@ -183,20 +184,34 @@ if args.start <= 2 and args.end >= 2:
             f"pip install -r {os.path.join(DIR_NAME, 'Dataset_Creator/requirements.txt')} >> /dev/null",
             shell=True,
         )
-        if args.files is None:
-            string_log_list = ",".join(log_list).strip().replace(" ", "")
+        if args.each_video_one_class:
+            logging.info(
+                "Creating a one class dataset, given the --end-frame-buffer argument"
+            )
+            arguments = (
+                f" --start-frame {args.starting_frame} "
+                f" --end-frame-buffer {args.end_frame_buffer} "
+            )
+            subprocess.run(
+                f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/one_class_runner.py')} {arguments} >> dataprep.log 2>&1",
+            )
         else:
-            string_log_list = args.files
+            logging.info("Creating a dataset.csv based on the txt files")
 
-        arguments = (
-            f" --files '{string_log_list}' "
-            f" --starting-frame {args.starting_frame} "
-            f" --frame-interval {args.frame_interval} "
-        )
-        subprocess.run(
-            f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/Make_Dataset.py')} {arguments} >> dataprep.log 2>&1",
-            shell=True,
-        )
+            if args.files is None:
+                string_log_list = ",".join(log_list).strip().replace(" ", "")
+            else:
+                string_log_list = args.files
+
+            arguments = (
+                f" --files '{string_log_list}' "
+                f" --starting-frame {args.starting_frame} "
+                f" --frame-interval {args.frame_interval} "
+            )
+            subprocess.run(
+                f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/Make_Dataset.py')} {arguments} >> dataprep.log 2>&1",
+                shell=True,
+            )
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 2")
