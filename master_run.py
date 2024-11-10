@@ -38,7 +38,9 @@ from test_steps import test_step_2
 from test_steps import test_step_3
 from test_steps import test_step_4
 
-logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S")
+logging.basicConfig(
+    format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
+)
 
 DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 
@@ -48,11 +50,15 @@ try:
     path = args.data_path
     os.chdir(path)
     logging.info("---- Purging all packages ----")
-    subprocess.run("xargs pip uninstall -y >> /dev/null", shell=True, executable="/bin/bash")
-    
+    subprocess.run(
+        "xargs pip uninstall -y >> /dev/null", shell=True, executable="/bin/bash"
+    )
+
     logging.info("---- Upgrading pip ----")
-    subprocess.run("pip install --upgrade pip >> /dev/null", shell=True, executable="/bin/bash")
-    
+    subprocess.run(
+        "pip install --upgrade pip >> /dev/null", shell=True, executable="/bin/bash"
+    )
+
     logging.info("---- Installing some requirements for the pipeline ----")
     subprocess.run(
         f"pip install -r {os.path.join(DIR_NAME, 'requirements.txt')} >> /dev/null",
@@ -79,18 +85,15 @@ if args.start <= 0 and args.end >= 0:
         )
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'Video_Frame_Counter/requirements.txt')} >> /dev/null",
-            shell=True, executable="/bin/bash",
+            shell=True,
+            executable="/bin/bash",
         )
         file_list = os.listdir(path)
 
-        contains_h264 = True in [
-            ".h264" in file for file in file_list
-        ]  # if there is at least a single h264 file
-        contains_mp4 = True in [
-            ".mp4" in file for file in file_list
-        ]  # if there is a single mp4 file
+        contains_h264 = any(".h264" in file for file in file_list)
+        contains_mp4 = any(".mp4" in file for file in file_list)
 
-        arguments = f"--max-workers {args.max_workers_frame_counter}"
+        arguments = f"--max-workers {args.max_workers_frame_counter} "
 
         logging.info("(0) ---- Running Video Conversions Sections ----")
 
@@ -132,14 +135,19 @@ if args.start <= 1 and args.end >= 1:
     try:
         if args.background_subtraction_type is not None:
             logging.info("(1) Starting the background subtraction")
-            
-            logging.info("(1) ---- Installing the requirements for the Video_Subtractions ----")
+
+            logging.info(
+                "(1) ---- Installing the requirements for the Video_Subtractions ----"
+            )
             subprocess.run(
                 f"pip install -r {os.path.join(DIR_NAME,'Video_Subtractions/requirements.txt')} >> /dev/null",
                 shell=True,
             )
 
-            arguments = f"--subtractor {args.background_subtraction_type} --max-workers {args.max_workers_background_subtraction}"
+            arguments = (
+                f" --subtractor {args.background_subtraction_type} "
+                f" --max-workers {args.max_workers_background_subtraction}"
+            )
             subprocess.run(
                 f"python3 {os.path.join(DIR_NAME, 'Video_Subtractions/Convert.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
@@ -167,8 +175,10 @@ if args.start <= 2 and args.end >= 2:
             or file.strip() == "logNeg.txt"
         ]
         logging.info(f"(2) Creating the dataset with the files: {log_list}")
-        
-        logging.info("(2) ---- Installing the requirements for the Dataset_Creator ----")
+
+        logging.info(
+            "(2) ---- Installing the requirements for the Dataset_Creator ----"
+        )
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'Dataset_Creator/requirements.txt')} >> /dev/null",
             shell=True,
@@ -178,7 +188,11 @@ if args.start <= 2 and args.end >= 2:
         else:
             string_log_list = args.files
 
-        arguments = f"--files '{string_log_list}' --starting-frame {args.starting_frame} --frame-interval {args.frame_interval}"
+        arguments = (
+            f" --files '{string_log_list}' "
+            f" --starting-frame {args.starting_frame} "
+            f" --frame-interval {args.frame_interval} "
+        )
         subprocess.run(
             f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/Make_Dataset.py')} {arguments} >> dataprep.log 2>&1",
             shell=True,
@@ -195,17 +209,31 @@ logging.info("(3) Splitting up the data")
 if args.start <= 3 and args.end >= 3:
     try:
         logging.info("(3) Starting the data splitting")
-        logging.info("(3) ---- Installing the requirements for the working_bee_analysis ----")
+        logging.info(
+            "(3) ---- Installing the requirements for the working_bee_analysis ----"
+        )
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'working_bee_analysis/requirements.txt')} >> /dev/null",
             shell=True,
         )
 
-        arguments = f"--k {args.k} --model {args.model} --gpus {args.gpus} --seed {args.seed} --width {args.width} --height {args.height} --path_to_file {os.path.join(DIR_NAME,'working_bee_analysis')} --frames_per_sample {args.frames_per_sample} --crop_x_offset {args.crop_x_offset} --crop_y_offset {args.crop_y_offset} --epochs {args.epochs}"
+        arguments = (
+            f" --k {args.k} "
+            f" --model {args.model} "
+            f" --gpus {args.gpus} "
+            f" --seed {args.seed} "
+            f" --width {args.width} "
+            f" --height {args.height} "
+            f" --path_to_file {os.path.join(DIR_NAME,'working_bee_analysis')} "
+            f" --frames_per_sample {args.frames_per_sample} "
+            f" --crop_x_offset {args.crop_x_offset} "
+            f" --crop_y_offset {args.crop_y_offset} "
+            f" --epochs {args.epochs} "
+        )
         if args.only_split:
-            arguments += " --only_split"
+            arguments += " --only_split "
         if args.training_only:
-            arguments += " --training_only"
+            arguments += " --training_only "
         subprocess.run(
             f"python3 {os.path.join(DIR_NAME, 'working_bee_analysis/make_validation_training.py')} {arguments} >> dataprep.log 2>&1",
             shell=True,
@@ -222,7 +250,7 @@ logging.info("(4) Starting the tar sampling")
 if args.start <= 4 and args.end >= 4:
     try:
         logging.info("(4) Starting the video sampling")
-        
+
         subprocess.run(
             f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/dataset_checker.py')}",
             shell=True,
@@ -236,13 +264,24 @@ if args.start <= 4 and args.end >= 4:
         subprocess.run(
             "chmod -R 777 . >> /dev/null 2>&1", shell=True
         )  # keep chmoding to make sure that the permissions are correct to sample videos
-        arguments = f"--frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling}"
+        arguments = (
+            f" --frames-per-sample {args.frames_per_sample} "
+            f" --number-of-samples {args.number_of_samples} "
+            f" --normalize {args.normalize} "
+            f" --out-channels {args.out_channels} "
+            f" --max-workers {args.max_workers_video_sampling} "
+        )
         if args.crop:
-            arguments += f" --crop --x-offset {args.crop_x_offset} --y-offset {args.crop_y_offset} --out-width {args.width} --out-height {args.height}"
+            arguments += (
+                f" --crop --x-offset {args.crop_x_offset} "
+                f" --y-offset {args.crop_y_offset} "
+                f" --out-width {args.width} "
+                f" --out-height {args.height}"
+            )
         if args.debug:
-            arguments += " --debug"
+            arguments += " --debug "
         if args.equalize_samples:
-            arguments += " --equalize-samples"
+            arguments += " --equalize-samples "
         subprocess.run(
             f"python3 {os.path.join(DIR_NAME, 'VideoSamplerRewrite/Dataprep.py')} {arguments} >> dataprep.log 2>&1",
             shell=True,
