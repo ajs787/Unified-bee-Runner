@@ -40,6 +40,9 @@ cd ..
 python3 -m venv venv
 source venv/bin/activate
 
+# if you are training with each video being a separate class,
+# use this flag: --each-video-one-class to make it work
+
 python3 Unified-bee-Runner/master_run.py \
     --equalize-samples \
     --height 720 \
