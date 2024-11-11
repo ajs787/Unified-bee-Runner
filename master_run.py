@@ -1,30 +1,64 @@
 """
+
+This script is organized in chapters, so you can use the start and end flags to run specific chapters. The chapters are as follows:
+
+
+Arguments:
+- `--data_path`: Path to the directory containing the data.
+- `--max_workers_frame_counter`: Maximum number of workers for the frame counter.
+- `--background_subtraction_type`: Type of background subtraction to use.
+- `--max_workers_background_subtraction`: Maximum number of workers for background subtraction.
+- `--each_video_one_class`: Flag to indicate if each video should be treated as one class.
+- `--starting_frame`: The starting frame for dataset creation.
+- `--end_frame_buffer`: The buffer for the end frame.
+- `--files`: Specific files to use for dataset creation.
+- `--frame_interval`: Interval between frames for dataset creation.
+- `--k`: Number of folds for k-fold cross-validation.
+- `--model`: Model to use for training.
+- `--gpus`: Number of GPUs to use for training.
+- `--seed`: Random seed for reproducibility.
+- `--width`: Width of the video frames.
+- `--height`: Height of the video frames.
+- `--path_to_file`: Path to the file for working bee analysis.
+- `--frames_per_sample`: Number of frames per sample.
+- `--crop_x_offset`: X offset for cropping.
+- `--crop_y_offset`: Y offset for cropping.
+- `--epochs`: Number of epochs for training.
+- `--only_split`: Flag to indicate if only data splitting should be performed.
+- `--training_only`: Flag to indicate if only training should be performed.
+- `--number_of_samples`: Number of samples for video sampling.
+- `--normalize`: Flag to indicate if normalization should be applied.
+- `--out_channels`: Number of output channels for video sampling.
+- `--max_workers_video_sampling`: Maximum number of workers for video sampling.
+- `--crop`: Flag to indicate if cropping should be applied.
+- `--debug`: Flag to indicate if debug mode should be enabled.
+- `--equalize_samples`: Flag to indicate if samples should be equalized.
+
+Steps:
+0. Video Conversions: Converts videos from .h264 to .mp4 or generates counts.csv if videos are already in .mp4 format.
+1. Background Subtraction: Performs background subtraction on the videos.
+2. Dataset Creation: Creates the dataset from the provided logs.
+3. Data Splitting: Splits the data into training and validation sets.
+4. Video Sampling: Samples the videos for training.
+5. Model Training: Trains the model using the specified parameters.
+
+Logging:
+The script uses logging to provide information about the progress and any errors encountered during the execution of the pipeline.
 Unified Bee Runner Pipeline Script
 
 This script orchestrates the entire pipeline for processing and analyzing bee-related datasets. The pipeline is divided into several steps, each performing a specific task. The steps can be controlled using the `--start` and `--end` arguments, allowing users to run specific parts of the pipeline.
 
-Steps:
-0. Video Conversion: Converts .h264 videos to .mp4 format.
-1. Background Subtraction: Applies background subtraction to the videos.
-2. Dataset Creation: Clones the Dataset_Creator repository and creates the dataset.
-3. Data Splitting: Splits the data into training and testing sets.
-4. Video Sampling: Clones the VideoSamplerRewrite repository and samples the video frames.
-5. Model Training: Runs the model training script.
-
 Chapter System:
 This script is ogranized in chapters, so you can use the start and end flags to run specific chapters. The chapters are as follows:
-1. Video Conversions
-2. Background Subtraction
-3. Dataset Creation
-4. Data Splitting
-5. Video Sampling
-6. Model Training -> this will create slurm jobs given the number of k-folds that you have requested
-
+0. Video Conversions
+1. Background Subtraction
+2. Dataset Creation
+3. Data Splitting
+4. Video Sampling
+5. Model Training -> this will create slurm jobs given the number of k-folds that you have requested
 
 - `--start`: The step with which to start the pipeline.
 - `--end`: The step with which to end the pipeline.
-TODO: Work to add common pitfalls
-TODO: Finish implementing debugging for the pipeline
 """
 
 import logging
@@ -32,11 +66,6 @@ import os
 import subprocess
 
 from ArgParser import get_args
-from test_steps import test_step_0
-from test_steps import test_step_1
-from test_steps import test_step_2
-from test_steps import test_step_3
-from test_steps import test_step_4
 
 logging.basicConfig(
     format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
@@ -88,8 +117,8 @@ if args.start <= 0 and args.end >= 0:
             shell=True,
             executable="/bin/bash",
         )
-        file_list = os.listdir(path)
 
+        file_list = os.listdir(path)
         contains_h264 = any(".h264" in file for file in file_list)
         contains_mp4 = any(".mp4" in file for file in file_list)
 
@@ -305,8 +334,6 @@ if args.start <= 4 and args.end >= 4:
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 4")
-    finally:
-        test_step_4("VideoSamplerRewrite")
 
 else:
     logging.info(

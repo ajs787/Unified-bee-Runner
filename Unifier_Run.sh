@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# TODO: ADD some dynamic stuff here, like the path to the python script
 
 # QUICKSTART OPTIONS, or some stuff that could be interesting to test out
 # --width: width of the video
@@ -22,7 +21,9 @@ export MKL_NUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1
 export OMP_NUM_THREADS=1
 
-export PATH="/usr/bin/python3:$PATH" # make sure we're all using the same python, a big problems with .bashrcs lol
+# make sure we're all using the same python
+# a big problems with .bashrcs lol
+export PATH="/usr/bin/python3:$PATH"
 
 cd Unified-bee-Runner
 git submodule update --init --recursive
@@ -31,4 +32,11 @@ cd ..
 python3 -m venv venv
 source venv/bin/activate
 
-python3 Unified-bee-Runner/master_run.py --equalize-samples --height 720 --width 960 --number-of-samples 100 --frames-per-sample 5 --gpus 2 >>dataprep.log 2>&1
+python3 Unified-bee-Runner/master_run.py \
+    --equalize-samples \
+    --height 720 \
+    --width 960 \
+    --number-of-samples 100 \
+    --frames-per-sample 5 \
+    --gpus 2 \
+    >>dataprep.log 2>&1
