@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # QUICKSTART OPTIONS, or some stuff that could be interesting to test out
 # --width: width of the video
 # --height: height of the video
@@ -21,6 +20,15 @@ export MKL_NUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1
 export OMP_NUM_THREADS=1
 
+# Chapter System:
+# This script is organized in chapters, so you can use the start and end flags to run specific chapters. The chapters are as follows:
+# 0. Video Conversions
+# 1. Background Subtraction
+# 2. Dataset Creation
+# 3. Data Splitting
+# 4. Video Sampling
+# 5. Model Training -> this will create slurm jobs given the number of k-folds that you have requested
+
 # make sure we're all using the same python
 # a big problems with .bashrcs lol
 export PATH="/usr/bin/python3:$PATH"
@@ -38,5 +46,4 @@ python3 Unified-bee-Runner/master_run.py \
     --width 960 \
     --number-of-samples 100 \
     --frames-per-sample 5 \
-    --gpus 2 \
-    >>dataprep.log 2>&1
+    --gpus 2 >>dataprep.log 2>&1 
