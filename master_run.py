@@ -223,6 +223,7 @@ if args.start <= 2 and args.end >= 2:
             )
             subprocess.run(
                 f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/one_class_runner.py')} {arguments} >> dataprep.log 2>&1",
+                shell=True,
             )
         else:
             logging.info("Creating a dataset.csv based on the txt files")
