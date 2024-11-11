@@ -195,16 +195,6 @@ else:
 if args.start <= 2 and args.end >= 2:
     logging.info("(2) Starting the dataset creation")
     try:
-        # finds the logs, which should be named either logNo, logPos, or logNeg
-        # TODO: add in the ability to make sure log list can work with non logNo/Pos/Neg files
-        log_list = [
-            file.strip()
-            for file in os.listdir()
-            if file.strip() == "logNo.txt"
-            or file.strip() == "logPos.txt"
-            or file.strip() == "logNeg.txt"
-        ]
-        logging.info(f"(2) Creating the dataset with the files: {log_list}")
 
         logging.info(
             "(2) ---- Installing the requirements for the Dataset_Creator ----"
@@ -220,13 +210,24 @@ if args.start <= 2 and args.end >= 2:
             arguments = (
                 f" --start-frame {args.starting_frame} "
                 f" --end-frame-buffer {args.end_frame_buffer} "
+                f" --splits {args.k}"
             )
             subprocess.run(
                 f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/one_class_runner.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
             )
         else:
-            logging.info("Creating a dataset.csv based on the txt files")
+            logging.info("(2) Creating a dataset.csv based on the txt files")
+            # finds the logs, which should be named either logNo, logPos, or logNeg
+            # TODO: add in the ability to make sure log list can work with non logNo/Pos/Neg files
+            log_list = [
+                file.strip()
+                for file in os.listdir()
+                if file.strip() == "logNo.txt"
+                or file.strip() == "logPos.txt"
+                or file.strip() == "logNeg.txt"
+            ]
+            logging.info(f"(2) Creating the dataset with the files: {log_list}")
 
             if args.files is None:
                 string_log_list = ",".join(log_list).strip().replace(" ", "")
@@ -279,6 +280,8 @@ if args.start <= 3 and args.end >= 3:
             arguments += " --only_split "
         if args.training_only:
             arguments += " --training_only "
+        if args.each_video_one_class:
+            arguments += " --remove-dataset-sub "
         subprocess.run(
             f"python3 {os.path.join(DIR_NAME, 'working_bee_analysis/make_validation_training.py')} {arguments} >> dataprep.log 2>&1",
             shell=True,
