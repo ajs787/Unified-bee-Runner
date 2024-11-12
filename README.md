@@ -4,7 +4,7 @@ Unified Bee Runner is a pipeline for processing and analyzing bee-related datase
 
 ## Pipeline
 
-![PipelineImage](UnifiedRunImage.png)
+![PipelineImage](RunImage.png)
 
 ## Table of Contents
 
