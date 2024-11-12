@@ -38,6 +38,8 @@ sbatch -x [servers, such as server1,server2] Unified-bee-Runner/Unifier_Run.sh
 
 ## Pipeline Steps
 
+This is run using the chapter system, so you can choose the specific steps that are used here by editing the `--start` and `--end` commands, which are by default respectively set at 0 and 6. 
+
 0. `Video Conversion and Counting`: Converts .h264 videos to .mp4 format and creates counts.csv. ([link](https://github.com/Elias2660/Video_Frame_Counter))
 1. `Background Subtraction`: Applies background subtraction to the video frames to isolate the bees ([link](https://github.com/Elias2660/Video_Subtractions))
 2. `Dataset Creation`: Creates the dataset.csv ([link](https://github.com/Elias2660/Dataset_Creator))
