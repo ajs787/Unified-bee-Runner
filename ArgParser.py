@@ -313,7 +313,7 @@ def get_args():
     )
     parser.add_argument(
         "--gradcam-cnn-model-layer",
-        type=list,
+        nargs="+",
         required=False,
         choices=[
             "model_a.0.0",
@@ -327,7 +327,7 @@ def get_args():
             "model_b.3.0",
             "model_b.4.0",
         ],
-        default='["model_a.4.0", "model_b.4.0"]',
+        default=["model_a.4.0", "model_b.4.0"],
         help="(training, make validation training) Model layers for gradcam plots, default=['model_a.4.0', 'model_b.4.0']",
     )
 
