@@ -275,7 +275,7 @@ if args.start <= 3 and args.end >= 3:
             f" --crop_x_offset {args.crop_x_offset} "
             f" --crop_y_offset {args.crop_y_offset} "
             f" --epochs {args.epochs} "
-            f" --gradcam_cnn_model_layer {args.gradcam_cnn_model_layer} "
+            f" --gradcam_cnn_model_layer {' '.join(args.gradcam_cnn_model_layer)} "
         )
         if args.only_split:
             arguments += " --only_split "
