@@ -325,7 +325,7 @@ def get_args():
             "model_b.1.0",
             "model_b.2.0",
             "model_b.3.0",
-            "model_b.4.0",
+            "model_b.4.0"
         ],
         default=["model_a.4.0", "model_b.4.0"],
         help="(training, make validation training) Model layers for gradcam plots, default=['model_a.4.0', 'model_b.4.0']",

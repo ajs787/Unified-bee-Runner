@@ -210,7 +210,7 @@ if args.start <= 2 and args.end >= 2:
             arguments = (
                 f" --start-frame {args.starting_frame} "
                 f" --end-frame-buffer {args.end_frame_buffer} "
-                f" --splits {args.k}"
+                f" --splits {args.k} "
             )
             subprocess.run(
                 f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/one_class_runner.py')} {arguments} >> dataprep.log 2>&1",
