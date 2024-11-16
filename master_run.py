@@ -275,6 +275,7 @@ if args.start <= 3 and args.end >= 3:
             f" --crop_x_offset {args.crop_x_offset} "
             f" --crop_y_offset {args.crop_y_offset} "
             f" --epochs {args.epochs} "
+            f" --gradcam_cnn_model_layer {args.gradcam_cnn_model_layer} "
         )
         if args.only_split:
             arguments += " --only_split "
@@ -318,6 +319,9 @@ if args.start <= 4 and args.end >= 4:
             f" --normalize {args.normalize} "
             f" --out-channels {args.out_channels} "
             f" --max-workers {args.max_workers_video_sampling} "
+            f" --dataset-writing-batch-size {args.dataset_writing_batch_size} " # !
+            f" --max-threads-pic-saving {args.max_threads_pic_saving} " # !
+            f" --max-workers-tar-writing {args.max_workers_tar_writing} " # !
         )
         if args.crop:
             arguments += (
