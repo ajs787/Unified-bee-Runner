@@ -261,6 +261,27 @@ def get_args():
         default=False,
     )
     parser.add_argument(
+        "--dataset-writing-batch-size",
+        type=int,
+        help="(sampling) The batch size for writing the dataset, default=50",
+        default=50,
+        required=False,
+    )
+    parser.add_argument(
+        "--max-threads-pic-saving",
+        type=int,
+        help="(sampling) The number of threads to use for saving the pictures, default=10",
+        required=False,
+        default=50,
+    )
+    parser.add_argument(
+        "--max-workers-tar-writing",
+        type=int,
+        help="(sampling) The number of workers to use for writing the tar files, default=4",
+        required=False,
+        default=4,
+    )
+    parser.add_argument(
         "--y-offset",
         type=int,
         help="The y offset for the crop, default=0",
@@ -289,6 +310,25 @@ def get_args():
         type=int,
         help="The number of gpus to use for training, default=1",
         default=1,
+    )
+    parser.add_argument(
+        "--gradcam-cnn-model-layer",
+        type=list,
+        required=False,
+        choices=[
+            "model_a.0.0",
+            "model_a.1.0",
+            "model_a.2.0",
+            "model_a.3.0",
+            "model_a.4.0",
+            "model_b.0.0",
+            "model_b.1.0",
+            "model_b.2.0",
+            "model_b.3.0",
+            "model_b.4.0",
+        ],
+        default=["model_a.4.0", "model_b.4.0"],
+        help="(training, make validation training) Model layers for gradcam plots.",
     )
 
     args = parser.parse_args()
