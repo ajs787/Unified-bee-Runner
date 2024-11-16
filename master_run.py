@@ -319,9 +319,9 @@ if args.start <= 4 and args.end >= 4:
             f" --normalize {args.normalize} "
             f" --out-channels {args.out_channels} "
             f" --max-workers {args.max_workers_video_sampling} "
-            f" --dataset-writing-batch-size {args.dataset_writing_batch_size} " # !
-            f" --max-threads-pic-saving {args.max_threads_pic_saving} " # !
-            f" --max-workers-tar-writing {args.max_workers_tar_writing} " # !
+            f" --dataset-writing-batch-size {args.dataset_writing_batch_size} " 
+            f" --max-threads-pic-saving {args.max_threads_pic_saving} " 
+            f" --max-workers-tar-writing {args.max_workers_tar_writing} " 
         )
         if args.crop:
             arguments += (
