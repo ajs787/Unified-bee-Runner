@@ -275,6 +275,12 @@ def get_args():
         default=50,
     )
     parser.add_argument(
+        "--max-batch-size-sampling",
+        type=int,
+        default=50,
+        help="(sampling) The maximum batch size for sampling the video, default=50",
+    )
+    parser.add_argument(
         "--max-workers-tar-writing",
         type=int,
         help="(sampling) The number of workers to use for writing the tar files, default=4",
@@ -325,7 +331,7 @@ def get_args():
             "model_b.1.0",
             "model_b.2.0",
             "model_b.3.0",
-            "model_b.4.0"
+            "model_b.4.0",
         ],
         default=["model_a.4.0", "model_b.4.0"],
         help="(training, make validation training) Model layers for gradcam plots, default=['model_a.4.0', 'model_b.4.0']",
