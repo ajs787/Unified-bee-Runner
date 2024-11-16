@@ -1,30 +1,64 @@
 """
+
+This script is organized in chapters, so you can use the start and end flags to run specific chapters. The chapters are as follows:
+
+
+Arguments:
+- `--data_path`: Path to the directory containing the data.
+- `--max_workers_frame_counter`: Maximum number of workers for the frame counter.
+- `--background_subtraction_type`: Type of background subtraction to use.
+- `--max_workers_background_subtraction`: Maximum number of workers for background subtraction.
+- `--each_video_one_class`: Flag to indicate if each video should be treated as one class.
+- `--starting_frame`: The starting frame for dataset creation.
+- `--end_frame_buffer`: The buffer for the end frame.
+- `--files`: Specific files to use for dataset creation.
+- `--frame_interval`: Interval between frames for dataset creation.
+- `--k`: Number of folds for k-fold cross-validation.
+- `--model`: Model to use for training.
+- `--gpus`: Number of GPUs to use for training.
+- `--seed`: Random seed for reproducibility.
+- `--width`: Width of the video frames.
+- `--height`: Height of the video frames.
+- `--path_to_file`: Path to the file for working bee analysis.
+- `--frames_per_sample`: Number of frames per sample.
+- `--crop_x_offset`: X offset for cropping.
+- `--crop_y_offset`: Y offset for cropping.
+- `--epochs`: Number of epochs for training.
+- `--only_split`: Flag to indicate if only data splitting should be performed.
+- `--training_only`: Flag to indicate if only training should be performed.
+- `--number_of_samples`: Number of samples for video sampling.
+- `--normalize`: Flag to indicate if normalization should be applied.
+- `--out_channels`: Number of output channels for video sampling.
+- `--max_workers_video_sampling`: Maximum number of workers for video sampling.
+- `--crop`: Flag to indicate if cropping should be applied.
+- `--debug`: Flag to indicate if debug mode should be enabled.
+- `--equalize_samples`: Flag to indicate if samples should be equalized.
+
+Steps:
+0. Video Conversions: Converts videos from .h264 to .mp4 or generates counts.csv if videos are already in .mp4 format.
+1. Background Subtraction: Performs background subtraction on the videos.
+2. Dataset Creation: Creates the dataset from the provided logs.
+3. Data Splitting: Splits the data into training and validation sets.
+4. Video Sampling: Samples the videos for training.
+5. Model Training: Trains the model using the specified parameters.
+
+Logging:
+The script uses logging to provide information about the progress and any errors encountered during the execution of the pipeline.
 Unified Bee Runner Pipeline Script
 
 This script orchestrates the entire pipeline for processing and analyzing bee-related datasets. The pipeline is divided into several steps, each performing a specific task. The steps can be controlled using the `--start` and `--end` arguments, allowing users to run specific parts of the pipeline.
 
-Steps:
-0. Video Conversion: Converts .h264 videos to .mp4 format.
-1. Background Subtraction: Applies background subtraction to the videos.
-2. Dataset Creation: Clones the Dataset_Creator repository and creates the dataset.
-3. Data Splitting: Splits the data into training and testing sets.
-4. Video Sampling: Clones the VideoSamplerRewrite repository and samples the video frames.
-5. Model Training: Runs the model training script.
-
 Chapter System:
 This script is ogranized in chapters, so you can use the start and end flags to run specific chapters. The chapters are as follows:
-1. Video Conversions
-2. Background Subtraction
-3. Dataset Creation
-4. Data Splitting
-5. Video Sampling
-6. Model Training -> this will create slurm jobs given the number of k-folds that you have requested
-
+0. Video Conversions
+1. Background Subtraction
+2. Dataset Creation
+3. Data Splitting
+4. Video Sampling
+5. Model Training -> this will create slurm jobs given the number of k-folds that you have requested
 
 - `--start`: The step with which to start the pipeline.
 - `--end`: The step with which to end the pipeline.
-TODO: Work to add common pitfalls
-TODO: Finish implementing debugging for the pipeline
 """
 
 import logging
@@ -32,13 +66,10 @@ import os
 import subprocess
 
 from ArgParser import get_args
-from test_steps import test_step_0
-from test_steps import test_step_1
-from test_steps import test_step_2
-from test_steps import test_step_3
-from test_steps import test_step_4
 
-logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S")
+logging.basicConfig(
+    format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
+)
 
 DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 
@@ -48,11 +79,15 @@ try:
     path = args.data_path
     os.chdir(path)
     logging.info("---- Purging all packages ----")
-    subprocess.run("xargs pip uninstall -y >> /dev/null", shell=True, executable="/bin/bash")
-    
+    subprocess.run(
+        "xargs pip uninstall -y >> /dev/null", shell=True, executable="/bin/bash"
+    )
+
     logging.info("---- Upgrading pip ----")
-    subprocess.run("pip install --upgrade pip >> /dev/null", shell=True, executable="/bin/bash")
-    
+    subprocess.run(
+        "pip install --upgrade pip >> /dev/null", shell=True, executable="/bin/bash"
+    )
+
     logging.info("---- Installing some requirements for the pipeline ----")
     subprocess.run(
         f"pip install -r {os.path.join(DIR_NAME, 'requirements.txt')} >> /dev/null",
@@ -79,18 +114,15 @@ if args.start <= 0 and args.end >= 0:
         )
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'Video_Frame_Counter/requirements.txt')} >> /dev/null",
-            shell=True, executable="/bin/bash",
+            shell=True,
+            executable="/bin/bash",
         )
+
         file_list = os.listdir(path)
+        contains_h264 = any(".h264" in file for file in file_list)
+        contains_mp4 = any(".mp4" in file for file in file_list)
 
-        contains_h264 = True in [
-            ".h264" in file for file in file_list
-        ]  # if there is at least a single h264 file
-        contains_mp4 = True in [
-            ".mp4" in file for file in file_list
-        ]  # if there is a single mp4 file
-
-        arguments = f"--max-workers {args.max_workers_frame_counter}"
+        arguments = f"--max-workers {args.max_workers_frame_counter} "
 
         logging.info("(0) ---- Running Video Conversions Sections ----")
 
@@ -132,14 +164,19 @@ if args.start <= 1 and args.end >= 1:
     try:
         if args.background_subtraction_type is not None:
             logging.info("(1) Starting the background subtraction")
-            
-            logging.info("(1) ---- Installing the requirements for the Video_Subtractions ----")
+
+            logging.info(
+                "(1) ---- Installing the requirements for the Video_Subtractions ----"
+            )
             subprocess.run(
                 f"pip install -r {os.path.join(DIR_NAME,'Video_Subtractions/requirements.txt')} >> /dev/null",
                 shell=True,
             )
 
-            arguments = f"--subtractor {args.background_subtraction_type} --max-workers {args.max_workers_background_subtraction}"
+            arguments = (
+                f" --subtractor {args.background_subtraction_type} "
+                f" --max-workers {args.max_workers_background_subtraction}"
+            )
             subprocess.run(
                 f"python3 {os.path.join(DIR_NAME, 'Video_Subtractions/Convert.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
@@ -158,31 +195,54 @@ else:
 if args.start <= 2 and args.end >= 2:
     logging.info("(2) Starting the dataset creation")
     try:
-        # finds the logs, which should be named either logNo, logPos, or logNeg
-        log_list = [
-            file.strip()
-            for file in os.listdir()
-            if file.strip() == "logNo.txt"
-            or file.strip() == "logPos.txt"
-            or file.strip() == "logNeg.txt"
-        ]
-        logging.info(f"(2) Creating the dataset with the files: {log_list}")
-        
-        logging.info("(2) ---- Installing the requirements for the Dataset_Creator ----")
+
+        logging.info(
+            "(2) ---- Installing the requirements for the Dataset_Creator ----"
+        )
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'Dataset_Creator/requirements.txt')} >> /dev/null",
             shell=True,
         )
-        if args.files is None:
-            string_log_list = ",".join(log_list).strip().replace(" ", "")
+        if args.each_video_one_class:
+            logging.info(
+                "Creating a one class dataset, given the --end-frame-buffer argument"
+            )
+            arguments = (
+                f" --start-frame {args.starting_frame} "
+                f" --end-frame-buffer {args.end_frame_buffer} "
+                f" --splits {args.k}"
+            )
+            subprocess.run(
+                f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/one_class_runner.py')} {arguments} >> dataprep.log 2>&1",
+                shell=True,
+            )
         else:
-            string_log_list = args.files
+            logging.info("(2) Creating a dataset.csv based on the txt files")
+            # finds the logs, which should be named either logNo, logPos, or logNeg
+            # TODO: add in the ability to make sure log list can work with non logNo/Pos/Neg files
+            log_list = [
+                file.strip()
+                for file in os.listdir()
+                if file.strip() == "logNo.txt"
+                or file.strip() == "logPos.txt"
+                or file.strip() == "logNeg.txt"
+            ]
+            logging.info(f"(2) Creating the dataset with the files: {log_list}")
 
-        arguments = f"--files '{string_log_list}' --starting-frame {args.starting_frame} --frame-interval {args.frame_interval}"
-        subprocess.run(
-            f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/Make_Dataset.py')} {arguments} >> dataprep.log 2>&1",
-            shell=True,
-        )
+            if args.files is None:
+                string_log_list = ",".join(log_list).strip().replace(" ", "")
+            else:
+                string_log_list = args.files
+
+            arguments = (
+                f" --files '{string_log_list}' "
+                f" --starting-frame {args.starting_frame} "
+                f" --frame-interval {args.frame_interval} "
+            )
+            subprocess.run(
+                f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/Make_Dataset.py')} {arguments} >> dataprep.log 2>&1",
+                shell=True,
+            )
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 2")
@@ -195,17 +255,34 @@ logging.info("(3) Splitting up the data")
 if args.start <= 3 and args.end >= 3:
     try:
         logging.info("(3) Starting the data splitting")
-        logging.info("(3) ---- Installing the requirements for the working_bee_analysis ----")
+        logging.info(
+            "(3) ---- Installing the requirements for the working_bee_analysis ----"
+        )
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'working_bee_analysis/requirements.txt')} >> /dev/null",
             shell=True,
         )
 
-        arguments = f"--k {args.k} --model {args.model} --gpus {args.gpus} --seed {args.seed} --width {args.width} --height {args.height} --path_to_file {os.path.join(DIR_NAME,'working_bee_analysis')} --frames_per_sample {args.frames_per_sample} --crop_x_offset {args.crop_x_offset} --crop_y_offset {args.crop_y_offset} --epochs {args.epochs}"
+        arguments = (
+            f" --k {args.k} "
+            f" --model {args.model} "
+            f" --gpus {args.gpus} "
+            f" --seed {args.seed} "
+            f" --width {args.width} "
+            f" --height {args.height} "
+            f" --path_to_file {os.path.join(DIR_NAME,'working_bee_analysis')} "
+            f" --frames_per_sample {args.frames_per_sample} "
+            f" --crop_x_offset {args.crop_x_offset} "
+            f" --crop_y_offset {args.crop_y_offset} "
+            f" --epochs {args.epochs} "
+            f" --gradcam_cnn_model_layer {args.gradcam_cnn_model_layer} "
+        )
         if args.only_split:
-            arguments += " --only_split"
+            arguments += " --only_split "
         if args.training_only:
-            arguments += " --training_only"
+            arguments += " --training_only "
+        if args.each_video_one_class:
+            arguments += " --remove-dataset-sub "
         subprocess.run(
             f"python3 {os.path.join(DIR_NAME, 'working_bee_analysis/make_validation_training.py')} {arguments} >> dataprep.log 2>&1",
             shell=True,
@@ -222,7 +299,7 @@ logging.info("(4) Starting the tar sampling")
 if args.start <= 4 and args.end >= 4:
     try:
         logging.info("(4) Starting the video sampling")
-        
+
         subprocess.run(
             f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/dataset_checker.py')}",
             shell=True,
@@ -236,13 +313,27 @@ if args.start <= 4 and args.end >= 4:
         subprocess.run(
             "chmod -R 777 . >> /dev/null 2>&1", shell=True
         )  # keep chmoding to make sure that the permissions are correct to sample videos
-        arguments = f"--frames-per-sample {args.frames_per_sample} --number-of-samples {args.number_of_samples} --normalize {args.normalize} --out-channels {args.out_channels} --max-workers {args.max_workers_video_sampling}"
+        arguments = (
+            f" --frames-per-sample {args.frames_per_sample} "
+            f" --number-of-samples {args.number_of_samples} "
+            f" --normalize {args.normalize} "
+            f" --out-channels {args.out_channels} "
+            f" --max-workers {args.max_workers_video_sampling} "
+            f" --dataset-writing-batch-size {args.dataset_writing_batch_size} " # !
+            f" --max-threads-pic-saving {args.max_threads_pic_saving} " # !
+            f" --max-workers-tar-writing {args.max_workers_tar_writing} " # !
+        )
         if args.crop:
-            arguments += f" --crop --x-offset {args.crop_x_offset} --y-offset {args.crop_y_offset} --out-width {args.width} --out-height {args.height}"
+            arguments += (
+                f" --crop --x-offset {args.crop_x_offset} "
+                f" --y-offset {args.crop_y_offset} "
+                f" --out-width {args.width} "
+                f" --out-height {args.height}"
+            )
         if args.debug:
-            arguments += " --debug"
+            arguments += " --debug "
         if args.equalize_samples:
-            arguments += " --equalize-samples"
+            arguments += " --equalize-samples "
         subprocess.run(
             f"python3 {os.path.join(DIR_NAME, 'VideoSamplerRewrite/Dataprep.py')} {arguments} >> dataprep.log 2>&1",
             shell=True,
@@ -251,8 +342,6 @@ if args.start <= 4 and args.end >= 4:
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 4")
-    finally:
-        test_step_4("VideoSamplerRewrite")
 
 else:
     logging.info(

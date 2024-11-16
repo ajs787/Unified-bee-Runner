@@ -45,20 +45,16 @@ Example:
 
 def get_args():
     description = """
-    Runs the pipeline that runs the model on the data.
-    \n
-    This programs expects the log files to be named of the form logNo.txt, logPos.txt, logNeg.txt.
-    \n
-    This script automatically converts the videos to .mp4, and then runs the pipeline on the data, type of video can either be mp4 or h264.
-    \n
-    This program also expects that you are running this on the ilab servers, with the anaconda environment of
-    /koko/system/anaconda/envs/python38/bin:$PATH and /koko/system/anaconda/envs/python39/bin:$PATH.
-    \n\n\n\n\n\n\n\n
+    Runs the pipeline that processes the data using the specified model.
+    
+    This program expects the log files to be named in the form logNo.txt, logPos.txt, logNeg.txt.
+    
+    This script automatically converts the videos to .mp4 format and then runs the pipeline on the data. The video type can either be mp4 or h264.
     """
-    poem = """    One file to rule them all,
-    one file to find them,
-    One file to bring them all,
-    and in the data directory train them;
+    poem = """    One file to rule them all, \
+    one file to find them, \
+    One file to bring them all, \
+    and in the data directory train them; \
     In the Land of ilab where the shadows lie."""
 
     # truncating the log file
@@ -155,7 +151,7 @@ def get_args():
         default="alexnet",
         required=False,
     )
-    
+
     # CREATING THE DATASET
     parser.add_argument(
         "--fps",
@@ -218,6 +214,20 @@ def get_args():
         required=False,
     )
     parser.add_argument(
+        "--each-video-one-class",
+        help="(dataset creation) the case where each video is one class; a special workflow",
+        action="store_true",
+        default=False,
+        required=False,
+    )
+    parser.add_argument(
+        "--end-frame-buffer",
+        type=int,
+        default=0,
+        help="(dataset creation) the number of frames to buffer at the end of the video, default=0",
+        required=False,
+    )
+    parser.add_argument(
         "--max-workers-frame-counter",
         type=int,
         help="(frame counting) The number of workers to use for the multiprocessing of the frame counter, default=20",
@@ -249,7 +259,27 @@ def get_args():
         action="store_true",
         help="(sampling) Equalize the samples so that each class has the same number of samples",
         default=False,
-        
+    )
+    parser.add_argument(
+        "--dataset-writing-batch-size",
+        type=int,
+        help="(sampling) The batch size for writing the dataset, default=50",
+        default=50,
+        required=False,
+    )
+    parser.add_argument(
+        "--max-threads-pic-saving",
+        type=int,
+        help="(sampling) The number of threads to use for saving the pictures, default=10",
+        required=False,
+        default=50,
+    )
+    parser.add_argument(
+        "--max-workers-tar-writing",
+        type=int,
+        help="(sampling) The number of workers to use for writing the tar files, default=4",
+        required=False,
+        default=4,
     )
     parser.add_argument(
         "--y-offset",
@@ -281,7 +311,25 @@ def get_args():
         help="The number of gpus to use for training, default=1",
         default=1,
     )
-    
+    parser.add_argument(
+        "--gradcam-cnn-model-layer",
+        type=list,
+        required=False,
+        choices=[
+            "model_a.0.0",
+            "model_a.1.0",
+            "model_a.2.0",
+            "model_a.3.0",
+            "model_a.4.0",
+            "model_b.0.0",
+            "model_b.1.0",
+            "model_b.2.0",
+            "model_b.3.0",
+            "model_b.4.0",
+        ],
+        default=["model_a.4.0", "model_b.4.0"],
+        help="(training, make validation training) Model layers for gradcam plots, default=['model_a.4.0', 'model_b.4.0']",
+    )
 
     args = parser.parse_args()
     return args
