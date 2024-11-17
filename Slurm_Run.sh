@@ -6,7 +6,6 @@ sbatch \
     -c 8 \
     -n 4 \
     -G 1 \
-    -x ilab4 \
     -o dataprep.log \
     Unified-bee-Runner/Unifier_Run.sh
 
