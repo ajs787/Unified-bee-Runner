@@ -264,7 +264,7 @@ def get_args():
         "--dataset-writing-batch-size",
         type=int,
         help="(sampling) The batch size for writing the dataset, default=50",
-        default=50,
+        default=30,
         required=False,
     )
     parser.add_argument(
@@ -272,7 +272,7 @@ def get_args():
         type=int,
         help="(sampling) The number of threads to use for saving the pictures, default=10",
         required=False,
-        default=50,
+        default=10,
     )
     parser.add_argument(
         "--max-batch-size-sampling",
