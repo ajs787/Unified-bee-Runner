@@ -263,8 +263,8 @@ def get_args():
     parser.add_argument(
         "--dataset-writing-batch-size",
         type=int,
-        help="(sampling) The batch size for writing the dataset, default=30",
-        default=30,
+        help="(sampling) The batch size for writing the dataset, default=20",
+        default=20,
         required=False,
     )
     parser.add_argument(
@@ -277,8 +277,8 @@ def get_args():
     parser.add_argument(
         "--max-batch-size-sampling",
         type=int,
-        default=30,
-        help="(sampling) The maximum batch size for sampling the video, default=30",
+        default=10,
+        help="(sampling) The maximum batch size for sampling the video, default=10",
     )
     parser.add_argument(
         "--max-workers-tar-writing",
