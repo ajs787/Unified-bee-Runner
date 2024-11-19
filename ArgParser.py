@@ -116,7 +116,7 @@ def get_args():
     parser.add_argument(
         "--max-workers-video-sampling",
         type=int,
-        help="(sampling)The number of workers to use for the multiprocessing of the sampler, default=15",
+        help="(sampling)The number of workers to use for the multiprocessing of the sampler, default=5",
         default=5,
     )
     parser.add_argument(
