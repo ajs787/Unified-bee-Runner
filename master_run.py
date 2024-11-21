@@ -354,7 +354,6 @@ logging.info("(5) Starting the model training")
 if args.start <= 5 and args.end >= 5:
     try:
         subprocess.run("chmod -R 777 . >> dataprep.log 2>&1", shell=True)
-        # subprocess.run("./training-run.sh", shell=True)
         with ProcessPoolExecutor() as executor: 
             train_scripts = [file for file in os.listdir() if file.startswith("train_") and file.endswith(".sh")]
             for script in train_scripts:
