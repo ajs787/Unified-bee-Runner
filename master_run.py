@@ -320,8 +320,8 @@ if args.start <= 4 and args.end >= 4:
             f" --normalize {args.normalize} "
             f" --out-channels {args.out_channels} "
             f" --max-workers {args.max_workers_video_sampling} "
-            f" --dataset-writing-batch-size {args.dataset_writing_batch_size} " 
-            f" --max-threads-pic-saving {args.max_threads_pic_saving} " 
+            f" --dataset-writing-batch-size {args.dataset_writing_batch_size} "
+            f" --max-threads-pic-saving {args.max_threads_pic_saving} "
             f" --max-workers-tar-writing {args.max_workers_tar_writing} "
             f" --max-batch-size-sampling {args.max_batch_size_sampling} "
         )
@@ -354,11 +354,20 @@ logging.info("(5) Starting the model training")
 if args.start <= 5 and args.end >= 5:
     try:
         subprocess.run("chmod -R 777 . >> dataprep.log 2>&1", shell=True)
-        with ProcessPoolExecutor() as executor: 
-            train_scripts = [file for file in os.listdir() if file.startswith("train_") and file.endswith(".sh")]
+        with ProcessPoolExecutor() as executor:
+            os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+            train_scripts = [
+                file
+                for file in os.listdir()
+                if file.startswith("train_") and file.endswith(".sh")
+            ]
             for script in train_scripts:
-                executor.submit(subprocess.run, f"./{script} >> dataset_trainlog_{script[6]}.log 2>&1", shell=True)
-        
+                executor.submit(
+                    subprocess.run,
+                    f"./{script} >> dataset_trainlog_{script[6]}.log 2>&1",
+                    shell=True,
+                )
+
         logging.info("Submitted executors for training")
         executor.shutdown(wait=True)
         subprocess.run("chmod -R 777 . >> dataprep.log 2>&1", shell=True)
