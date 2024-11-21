@@ -6,7 +6,7 @@ sbatch \
     -n 8 \
     -c 12\
     -G 3\
-    --mem=200G \
+    --mem=500G \
     --time=28800 \
     -o dataprep.log \
     Unified-bee-Runner/Unifier_Run.sh
