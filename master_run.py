@@ -64,6 +64,7 @@ This script is ogranized in chapters, so you can use the start and end flags to 
 import logging
 import os
 import subprocess
+from concurrent.futures import ProcessPoolExecutor
 
 from ArgParser import get_args
 
@@ -353,10 +354,17 @@ logging.info("(5) Starting the model training")
 if args.start <= 5 and args.end >= 5:
     try:
         subprocess.run("chmod -R 777 . >> dataprep.log 2>&1", shell=True)
-        subprocess.run("./training-run.sh", shell=True)
+        # subprocess.run("./training-run.sh", shell=True)
+        with ProcessPoolExecutor() as executor: 
+            train_scripts = [file for file in os.listdir() if file.startswith("train_") and file.endswith(".sh")]
+            for script in train_scripts:
+                executor.submit(subprocess.run, f"./{script} >> dataset_trainlog_{script[6]}.log 2>&1", shell=True)
+        
+        logging.info("Submitted executors for training")
+        executor.shutdown(wait=True)
         subprocess.run("chmod -R 777 . >> dataprep.log 2>&1", shell=True)
 
-        logging.info("Pipeline complete, training is occuring")
+        logging.info("Pipeline complete")
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 5")
