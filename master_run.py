@@ -72,6 +72,11 @@ logging.basicConfig(
     format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
 )
 
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['NUMEXPR_NUM_THREADS'] = '1'
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
+
 DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 
 try:
