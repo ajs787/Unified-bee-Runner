@@ -156,7 +156,7 @@ if args.start <= 0 and args.end >= 0:
             )
 
         logging.info("(0) ---- Changing Permissions for the Repository----")
-        subprocess.run("chmod -R 777 .", shell=True)
+        subprocess.run("chmod -R 777 . >> /dev/null 2>&1", shell=True)
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 0")
@@ -358,11 +358,11 @@ else:
 logging.info("(5) Starting the model training")
 if args.start <= 5 and args.end >= 5:
     try:
-        subprocess.run("chmod -R 777 . >> dataprep.log 2>&1", shell=True)
+        subprocess.run("chmod -R 777 . >> /dev/null 2>&1", shell=True)
         os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
         subprocess.run("./training-run.sh", shell=True)
         logging.info("Submitted executors for training")
-        subprocess.run("chmod -R 777 . >> dataprep.log 2>&1", shell=True)
+        subprocess.run("chmod -R 777 . >> /dev/null 2>&1", shell=True)
         logging.info("Pipeline complete")
     except Exception as e:
         logging.error(f"Error: {e}")
