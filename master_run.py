@@ -72,11 +72,6 @@ logging.basicConfig(
     format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
 )
 
-os.environ['MKL_NUM_THREADS'] = '1'
-os.environ['NUMEXPR_NUM_THREADS'] = '1'
-os.environ['OMP_NUM_THREADS'] = '1'
-os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
-
 DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 
 try:
@@ -359,7 +354,6 @@ logging.info("(5) Starting the model training")
 if args.start <= 5 and args.end >= 5:
     try:
         subprocess.run("chmod -R 777 . >> /dev/null 2>&1", shell=True)
-        os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
         subprocess.run("./training-run.sh", shell=True)
         logging.info("Submitted executors for training")
         subprocess.run("chmod -R 777 . >> /dev/null 2>&1", shell=True)

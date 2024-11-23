@@ -47,6 +47,6 @@ python3 Unified-bee-Runner/master_run.py \
     --equalize-samples \
     --height 720 \
     --width 960 \
-    --number-of-samples 100 \
+    --number-of-samples 100 --max-workers-video-sampling 2 \
     --frames-per-sample 5 \
     --gpus 2 >>dataprep.log 2>&1 
