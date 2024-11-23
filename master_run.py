@@ -359,24 +359,10 @@ logging.info("(5) Starting the model training")
 if args.start <= 5 and args.end >= 5:
     try:
         subprocess.run("chmod -R 777 . >> dataprep.log 2>&1", shell=True)
-        with ProcessPoolExecutor() as executor:
-            os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
-            train_scripts = [
-                file
-                for file in os.listdir()
-                if file.startswith("train_") and file.endswith(".sh")
-            ]
-            for script in train_scripts:
-                executor.submit(
-                    subprocess.run,
-                    f"./{script} >> dataset_trainlog_{script[6]}.log 2>&1",
-                    shell=True,
-                )
-
+        os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+        subprocess.run("./training-run.sh", shell=True)
         logging.info("Submitted executors for training")
-        executor.shutdown(wait=True)
         subprocess.run("chmod -R 777 . >> dataprep.log 2>&1", shell=True)
-
         logging.info("Pipeline complete")
     except Exception as e:
         logging.error(f"Error: {e}")
