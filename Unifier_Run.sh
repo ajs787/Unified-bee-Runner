@@ -33,7 +33,7 @@ export OMP_NUM_THREADS=1
 # a big problems with .bashrcs lol
 export PATH="/usr/bin/python3:$PATH"
 
-cd Unified-bee-Runner
+cd Unified-bee-Runner || exit
 git submodule update --init --recursive
 cd ..
 
