@@ -107,7 +107,8 @@ if args.start > args.end:
 
 #  if the videos a .h264, convert to .mp4, else, just make a counts.csv
 if args.start <= 0 and args.end >= 0:
-    logging.info("(0) Starting the video conversions, always defaulting to .mp4")
+    logging.info(
+        "(0) Starting the video conversions, always defaulting to .mp4")
     try:
 
         logging.debug(
@@ -170,7 +171,7 @@ if args.start <= 1 and args.end >= 1:
                 "(1) ---- Installing the requirements for the Video_Subtractions ----"
             )
             subprocess.run(
-                f"pip install -r {os.path.join(DIR_NAME,'Video_Subtractions/requirements.txt')} >> /dev/null",
+                f"pip install -r {os.path.join(DIR_NAME, 'Video_Subtractions/requirements.txt')} >> /dev/null",
                 shell=True,
             )
 
@@ -184,7 +185,8 @@ if args.start <= 1 and args.end >= 1:
             )
 
         else:
-            logging.info("No background subtraction type given, skipping this step")
+            logging.info(
+                "No background subtraction type given, skipping this step")
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 1")
@@ -228,7 +230,8 @@ if args.start <= 2 and args.end >= 2:
                 or file.strip() == "logPos.txt"
                 or file.strip() == "logNeg.txt"
             ]
-            logging.info(f"(2) Creating the dataset with the files: {log_list}")
+            logging.info(
+                f"(2) Creating the dataset with the files: {log_list}")
 
             if args.files is None:
                 string_log_list = ",".join(log_list).strip().replace(" ", "")
@@ -271,7 +274,7 @@ if args.start <= 3 and args.end >= 3:
             f" --seed {args.seed} "
             f" --width {args.width} "
             f" --height {args.height} "
-            f" --path_to_file {os.path.join(DIR_NAME,'working_bee_analysis')} "
+            f" --path_to_file {os.path.join(DIR_NAME, 'working_bee_analysis')} "
             f" --frames_per_sample {args.frames_per_sample} "
             f" --crop_x_offset {args.crop_x_offset} "
             f" --crop_y_offset {args.crop_y_offset} "
@@ -305,7 +308,8 @@ if args.start <= 4 and args.end >= 4:
             f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/dataset_checker.py')}",
             shell=True,
         )
-        logging.info("(4) ---- Installing the requirements for the VideoSamplerRewrite")
+        logging.info(
+            "(4) ---- Installing the requirements for the VideoSamplerRewrite")
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'VideoSamplerRewrite/requirements.txt')} >> /dev/null",
             shell=True,
