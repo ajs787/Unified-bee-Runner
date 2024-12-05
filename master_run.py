@@ -63,7 +63,6 @@ This script is ogranized in chapters, so you can use the start and end flags to 
 import logging
 import os
 import subprocess
-from concurrent.futures import ProcessPoolExecutor
 
 from ArgParser import get_args
 
