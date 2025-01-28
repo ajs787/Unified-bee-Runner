@@ -40,12 +40,12 @@ sbatch -x [servers, such as server1,server2] Unified-bee-Runner/Unifier_Run.sh
 
 This is run using the chapter system, so you can choose the specific steps that are used here by editing the `--start` and `--end` commands, which are by default respectively set at 0 and 6. 
 
-0. `Video Conversion and Counting`: Converts .h264 videos to .mp4 format and creates counts.csv. ([link](https://github.com/Elias2660/Video_Frame_Counter))
-1. `Background Subtraction`: Applies background subtraction to the video frames to isolate the bees ([link](https://github.com/Elias2660/Video_Subtractions))
-2. `Dataset Creation`: Creates the dataset.csv ([link](https://github.com/Elias2660/Dataset_Creator))
-2. `Data Splitting`: Splits the data into training and testing sets ([link](https://github.com/Elias2660/working_bee_analysis/blob/main/make_validation_training.py))
-3. `Video Sampling`: Clones the VideoSamplerRewrite repository and samples the video frames ([link](https://github.com/Elias2660/VideoSamplerRewrite))
-4. `Model Training`: Runs the model training script ([link](https://github.com/Elias2660/working_bee_analysis/blob/main/VidActRecTrain.py))
+0. [`Video Conversion and Counting`](https://github.com/Elias2660/Video_Frame_Counter): Converts .h264 videos to .mp4 format and creates counts.csv.
+1. [`Background Subtraction`](https://github.com/Elias2660/Video_Subtractions): Applies background subtraction to the video frames to isolate the bees 
+2. [`Dataset Creation`](https://github.com/Elias2660/Dataset_Creator): Creates the dataset.csv 
+2. [`Data Splitting`](https://github.com/Elias2660/working_bee_analysis/blob/main/make_validation_training.py): Splits the data into training and testing sets 
+3. [`Video Sampling`](https://github.com/Elias2660/VideoSamplerRewrite): Clones the VideoSamplerRewrite repository and samples the video frames
+4. [`Model Training`](https://github.com/Elias2660/working_bee_analysis/blob/main/VidActRecTrain.py): Runs the model training script
 
 ## Contributing
 
