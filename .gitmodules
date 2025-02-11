@@ -13,3 +13,12 @@
 [submodule "Video_Subtractions"]
 	path = Video_Subtractions
 	url = https://github.com/Elias2660/Video_Subtractions
+[submodule "non_workflow_links/Pi-Code"]
+	path = non_workflow_links/Pi-Code
+	url = https://github.com/Elias2660/Pi-Code
+[submodule "non_workflow_links/DataCropping"]
+	path = non_workflow_links/DataCropping
+	url = https://github.com/Elias2660/DataCropping
+[submodule "non_workflow_links/bee_analysis"]
+	path = non_workflow_links/bee_analysis
+	url = https://github.com/bfirner/bee_analysis
