@@ -47,6 +47,10 @@ This is run using the chapter system, so you can choose the specific steps that 
 4. [`Video Sampling`](https://github.com/Elias2660/VideoSamplerRewrite): Clones the VideoSamplerRewrite repository and samples the video frames
 5. [`Model Training`](https://github.com/Elias2660/working_bee_analysis/blob/main/VidActRecTrain.py): Runs the model training script
 
+## Other Stuff
+
+This projects has other project submodules in the [non_workflow_links](non_workflow_links/) directory, which relate to other parts of the bee project.
+
 ## Contributing
 
 [Contributions](CONTRIBUTING.md) are welcome! Please open an issue or submit a pull request.
