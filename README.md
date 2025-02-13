@@ -24,7 +24,19 @@ Unified Bee Runner is a pipeline for processing and analyzing bee-related datase
 
 ## Usage
 
-To run the pipeline, use the provided [shell script](Unifier_Run.sh) in [SLURM](https://slurm.schedmd.com/documentation.html). If you don't want to, please copy the [Unifier_Run.sh](Unifier_Run.sh) file and execute it in your command line:
+To run the pipeline, use the provided [shell script](Unifier_Run.sh) in [SLURM](https://slurm.schedmd.com/documentation.html). If you don't want to, (this is not recommended though) you can execute it in your command line, though this will take a while:
+
+**NOTE**: Do not `cd` into the `Unified-Bee-Runner` dir to run with default settings. They are configured to run in the dir containing the data. Your file structure should look like when you run the commands (you should be in data_dir):
+
+```
+data_dir
+├── Unified_bee_Runner
+├── d1.mp4
+├── d2.mp4
+├── d3.mp4
+├── logNo.txt
+└── logPos.txt
+```
 
 Run `squeue -u <user>` to be able to find your current jobs and the servers that they are running on.
 
@@ -36,9 +48,15 @@ Then run:
 sbatch -x [servers, such as server1,server2] Unified-bee-Runner/Unifier_Run.sh
 ```
 
+To run with default settings, you can run:
+
+```sh
+./Unified-bee-Runner/Slurm_Run.sh
+```
+
 ## Pipeline Steps
 
-This is run using the chapter system, so you can choose the specific steps that are used here by editing the `--start` and `--end` commands, which are by default respectively set at 0 and 6.
+This is run using the chapter system, so you can choose the specific steps that are used here by editing the `--start` and `--end` commands, which are by default respectively set at 0 and 6, which will run the entire model.
 
 0. [`Video Conversion and Counting`](https://github.com/Elias2660/Video_Frame_Counter): Converts .h264 videos to .mp4 format and creates counts.csv.
 1. [`Background Subtraction`](https://github.com/Elias2660/Video_Subtractions): Applies background subtraction to the video frames to isolate the bees
