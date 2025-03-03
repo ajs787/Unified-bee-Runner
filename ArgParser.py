@@ -51,9 +51,9 @@ def get_args():
     
     This script automatically converts the videos to .mp4 format and then runs the pipeline on the data. The video type can either be mp4 or h264.
     """
-    poem = """    One file to rule them all, \
-    one file to find them, \
-    One file to bring them all, \
+    poem = """    One workflow to rule them all, \
+    one workflow to find them, \
+    One workflow to bring them all, \
     and in the data directory train them; \
     In the Land of ilab where the shadows lie."""
 
@@ -81,14 +81,21 @@ def get_args():
         default=6,
         required=False,
     )
-    # for background subtraction
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="(unifier)Print debug information, activates debug for logger (and other scripts), defgault=False",
+        default=False,
+    )
+
+    # BACKGROUND SUBTRACTION
     parser.add_argument(
         "--background-subtraction-type",
         choices=["MOG2", "KNN"],
         required=False,
         default=None,
         type=str,
-        help="(background subtraction)Background subtraction type to use, default None, you can either choose MOG2 or KNN",
+        help="(background subtraction) Background subtraction type to use, default None, you can either choose MOG2 or KNN",
     )
     # for make_validation_training
     parser.add_argument(
@@ -171,6 +178,43 @@ def get_args():
         help="(dataset creation) space between frames, default 0",
         default=0,
     )
+    parser.add_argument(
+        "--test-by-time",
+        action="store_true",
+        required=False,
+        default=False,
+        help="(dataset creation) creates a dataset.csv that is time based, rather than based on the log files. This is to test for correlation between daytime and class accuracy",
+    )
+    parser.add_argument(
+        "--time-splits",
+        type=int,
+        default=3,
+        required=False,
+        help="(dataset creation) if the --test-by-time option is called, this will determine the number of splits that will occur",
+    )
+    parser.add_argument(
+        "--files",
+        type=str,
+        help="(dataset creation) name of the log files that one wants to use, default logNo.txt, logNeg.txt, logPos.txt",
+        default=None,
+        required=False,
+    )
+    parser.add_argument(
+        "--each-video-one-class",
+        help="(dataset creation) the case where each video is one class; a special workflow",
+        action="store_true",
+        default=False,
+        required=False,
+    )
+    parser.add_argument(
+        "--end-frame-buffer",
+        type=int,
+        default=0,
+        help="(dataset creation) the number of frames to buffer at the end of the video, default=0",
+        required=False,
+    )
+
+    # SPLITTING UP THE DATASET
 
     parser.add_argument(
         "--seed",
@@ -206,27 +250,8 @@ def get_args():
         default=False,
         help="(making the splits) only generate the training set files, default: False",
     )
-    parser.add_argument(
-        "--files",
-        type=str,
-        help="(dataset creation) name of the log files that one wants to use, default logNo.txt, logNeg.txt, logPos.txt",
-        default=None,
-        required=False,
-    )
-    parser.add_argument(
-        "--each-video-one-class",
-        help="(dataset creation) the case where each video is one class; a special workflow",
-        action="store_true",
-        default=False,
-        required=False,
-    )
-    parser.add_argument(
-        "--end-frame-buffer",
-        type=int,
-        default=0,
-        help="(dataset creation) the number of frames to buffer at the end of the video, default=0",
-        required=False,
-    )
+
+    # FRAME COUNTING
     parser.add_argument(
         "--max-workers-frame-counter",
         type=int,
@@ -235,6 +260,7 @@ def get_args():
         required=False,
     )
 
+    # BACKGROUND SUBTRACTION
     parser.add_argument(
         "--max-workers-background-subtraction",
         type=int,
@@ -242,12 +268,43 @@ def get_args():
         default=10,
         required=False,
     )
+
+    # TRAINING
     parser.add_argument(
         "--epochs",
         type=int,
         help="(training) The number of epochs to train the model, default=10",
         default=10,
     )
+    parser.add_argument(
+        "--gpus",
+        type=int,
+        help="(training) The number of gpus to use for training, default=1",
+        default=1,
+    )
+
+    parser.add_argument(
+        "--gradcam-cnn-model-layer",
+        nargs="+",
+        required=False,
+        choices=[
+            "model_a.0.0",
+            "model_a.1.0",
+            "model_a.2.0",
+            "model_a.3.0",
+            "model_a.4.0",
+            "model_b.0.0",
+            "model_b.1.0",
+            "model_b.2.0",
+            "model_b.3.0",
+            "model_b.4.0",
+        ],
+        default=["model_a.4.0", "model_b.4.0"],
+        help="(training, make validation training) Model layers for gradcam plots, default=['model_a.4.0', 'model_b.4.0']",
+    )
+
+    # SAMPLING
+
     parser.add_argument(
         "--crop",
         action="store_true",
@@ -304,37 +361,6 @@ def get_args():
         type=int,
         help="The height of the output image, default=400",
         default=400,
-    )
-    parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="Print debug information, activates debug for logger (and other scripts), defgault=False",
-        default=False,
-    )
-    parser.add_argument(
-        "--gpus",
-        type=int,
-        help="The number of gpus to use for training, default=1",
-        default=1,
-    )
-    parser.add_argument(
-        "--gradcam-cnn-model-layer",
-        nargs="+",
-        required=False,
-        choices=[
-            "model_a.0.0",
-            "model_a.1.0",
-            "model_a.2.0",
-            "model_a.3.0",
-            "model_a.4.0",
-            "model_b.0.0",
-            "model_b.1.0",
-            "model_b.2.0",
-            "model_b.3.0",
-            "model_b.4.0",
-        ],
-        default=["model_a.4.0", "model_b.4.0"],
-        help="(training, make validation training) Model layers for gradcam plots, default=['model_a.4.0', 'model_b.4.0']",
     )
 
     args = parser.parse_args()
