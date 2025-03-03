@@ -54,7 +54,7 @@ Command-line Arguments:
     --each-video-one-class
                             (dataset creation) Treat each video as one class; a special workflow.
     --end-frame-buffer END_FRAME_BUFFER
-                            (dataset creation) Number of frames to buffer at the end of the video, default 0.
+                            (dataset creation) Number of frames to buffer at the end of the video, default 0, NOTE/TODO: only works for each frame one class and time testing, not base version
     --seed SEED
                             (making the splits) Seed for randomizing the data sets, default "01011970".
     --only_split
@@ -270,7 +270,7 @@ def get_args():
         "--end-frame-buffer",
         type=int,
         default=0,
-        help="(dataset creation) the number of frames to buffer at the end of the video, default=0",
+        help="(dataset creation) the number of frames to buffer at the end of the video (NOTE/TODO: only works for each frame one class and time testing, not base version), default=0",
         required=False,
     )
 
