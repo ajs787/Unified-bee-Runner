@@ -9,30 +9,90 @@ Functions:
     - get_args: Parses and returns the command-line arguments.
 
 Command-line Arguments:
-    - --data_path: Path to the data, default is ".".
-    - --start: Start the pipeline at the given step, default is 0.
-    - --end: End the pipeline at the given step, default is 6.
-    - --background-subtraction-type: Background subtraction type to use, choices are "MOG2" or "KNN", default is None.
-    - --width: Width of the images, default is 960.
-    - --height: Height of the images, default is 720.
-    - --number-of-samples: The number of samples max that will be gathered by the sampler, default is 40000.
-    - --max-workers-video-sampling: The number of workers to use for the multiprocessing of the sampler, default is 10.
-    - --frames-per-sample: The number of frames per sample, default is 1.
-    - --normalize: Normalize the images, default is True.
-    - --out-channels: The number of output channels, default is 1.
-    - --k: Number of folds for cross-validation, default is 3.
-    - --model: Model to use, default is "alexnet".
-    - --fps: Frames per second, default is 25.
-    - --starting-frame: Starting frame, default is 1.
-    - --frame-interval: Space between frames, default is 0.
-    - --seed: Seed to use for randomizing the data sets, default is "01011970".
-    - --only_split: Set to finish after splitting the CSV, default is False.
-    - --crop_x_offset: The offset (in pixels) of the crop location on the original image in the x dimension, default is 0.
-    - --crop_y_offset: The offset (in pixels) of the crop location on the original image in the y dimension, default is 0.
-    - --training_only: Only generate the training set files, default is False.
-    - --files: Name of the log files that one wants to use, default is None.
-    - --max-workers-frame-counter: The number of workers to use for the multiprocessing of the frame counter, default is 20.
-    - --max-workers-background-subtraction: The number of workers to use for the multiprocessing of the background subtraction, default is 10.
+    -h, --help
+                            Show this help message and exit.
+    --data_path DATA_PATH
+                            Path to the data, default is ".".
+    --start START
+                            (unifier) Start the pipeline at the given step, default 0.
+    --end END
+                            (unifier) End the pipeline at the given step, default 6 (will not stop).
+    --debug
+                            (unifier) Print debug information and activate debug mode for logger (and other scripts), default False.
+    --background-subtraction-type {MOG2,KNN}
+                            (background subtraction) Background subtraction type to use, default None. Options: MOG2 or KNN.
+    --width WIDTH
+                            (splitting the data) Width of the images, default 960.
+    --height HEIGHT
+                            (splitting the data) Height of the images, default 720.
+    --number-of-samples NUMBER_OF_SAMPLES
+                            (sampling) The maximum number of samples to be gathered by the sampler, default 40000.
+    --max-workers-video-sampling MAX_WORKERS_VIDEO_SAMPLING
+                            (sampling) The number of workers to use for multiprocessing of the sampler, default 3.
+    --frames-per-sample FRAMES_PER_SAMPLE
+                            (sampling, splitting the data) Number of frames per sample, default 1.
+    --normalize NORMALIZE
+                            (sampling) Normalize the images, default True.
+    --out-channels OUT_CHANNELS
+                            (sampling) The number of output channels, default 1.
+    --k K
+                            (making the splits) Number of folds for cross-validation, default 3.
+    --model MODEL
+                            (making the splits) Model to use, default "alexnet".
+    --fps FPS
+                            (dataset creation) Frames per second, default 25.
+    --starting-frame STARTING_FRAME
+                            (dataset creation) Starting frame, default 1.
+    --frame-interval FRAME_INTERVAL
+                            (dataset creation) Space between frames, default 0.
+    --test-by-time
+                            (dataset creation) Create a dataset.csv based on time (instead of log files) to test correlation between daytime and class accuracy.
+    --time-splits TIME_SPLITS
+                            (dataset creation) If --test-by-time is used, determine the number of splits to occur.
+    --files FILES
+                            (dataset creation) Name of the log files to use, default "logNo.txt, logNeg.txt, logPos.txt".
+    --each-video-one-class
+                            (dataset creation) Treat each video as one class; a special workflow.
+    --end-frame-buffer END_FRAME_BUFFER
+                            (dataset creation) Number of frames to buffer at the end of the video, default 0.
+    --seed SEED
+                            (making the splits) Seed for randomizing the data sets, default "01011970".
+    --only_split
+                            (making the splits) Finish after splitting the CSV, default False.
+    --crop_x_offset CROP_X_OFFSET
+                            (making the splits) Offset (in pixels) of the crop location on the original image in the x dimension, default 0.
+    --crop_y_offset CROP_Y_OFFSET
+                            (making the splits) Offset (in pixels) of the crop location on the original image in the y dimension, default 0.
+    --training_only TRAINING_ONLY
+                            (making the splits) Only generate the training set files, default False.
+    --max-workers-frame-counter MAX_WORKERS_FRAME_COUNTER
+                            (frame counting) Number of workers for multiprocessing of the frame counter, default 20.
+    --max-workers-background-subtraction MAX_WORKERS_BACKGROUND_SUBTRACTION
+                            (background subtraction) Number of workers for multiprocessing of background subtraction, default 10.
+    --epochs EPOCHS
+                            (training) Number of epochs to train the model, default 10.
+    --gpus GPUS
+                            (training) Number of GPUs to use for training, default 1.
+    --gradcam-cnn-model-layer {model_a.0.0,model_a.1.0,model_a.2.0,model_a.3.0,model_a.4.0,model_b.0.0,model_b.1.0,model_b.2.0,model_b.3.0,model_b.4.0} [...]
+                            (training, make validation training) Model layers for gradcam plots, default ['model_a.4.0', 'model_b.4.0'].
+    --crop
+                            (sampling) Crop the images to the correct size.
+    --equalize-samples
+                            (sampling) Equalize the samples so that each class has the same number of samples.
+    --dataset-writing-batch-size DATASET_WRITING_BATCH_SIZE
+                            (sampling) Batch size for writing the dataset, default 10.
+    --max-threads-pic-saving MAX_THREADS_PIC_SAVING
+                            (sampling) Number of threads to use for saving pictures, default 4.
+    --max-batch-size-sampling MAX_BATCH_SIZE_SAMPLING
+                            (sampling) Maximum batch size for sampling the video, default 5.
+    --max-workers-tar-writing MAX_WORKERS_TAR_WRITING
+                            (sampling) Number of workers for writing tar files, default 4.
+    --y-offset Y_OFFSET
+                            Y offset for the crop, default 0.
+    --out-width OUT_WIDTH
+                            Width of the output image, default 400.
+    --out-height OUT_HEIGHT
+                            Height of the output image, default 400.
 
 Usage:
     This script is intended to be used as part of a larger pipeline. It is typically invoked from the command line or another script, such as master_run.py.

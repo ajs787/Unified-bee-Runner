@@ -60,15 +60,16 @@ This script is ogranized in chapters, so you can use the start and end flags to 
 - `--start`: The step with which to start the pipeline.
 - `--end`: The step with which to end the pipeline.
 """
+
 import logging
 import os
 import subprocess
 
 from ArgParser import get_args
 
-logging.basicConfig(format="%(asctime)s: %(message)s",
-                    level=logging.INFO,
-                    datefmt="%Y-%m-%d %H:%M:%S")
+logging.basicConfig(
+    format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
+)
 
 DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 
@@ -78,14 +79,14 @@ try:
     path = args.data_path
     os.chdir(path)
     logging.info("---- Purging all packages ----")
-    subprocess.run("xargs pip uninstall -y >> /dev/null",
-                   shell=True,
-                   executable="/bin/bash")
+    subprocess.run(
+        "xargs pip uninstall -y >> /dev/null", shell=True, executable="/bin/bash"
+    )
 
     logging.info("---- Upgrading pip ----")
-    subprocess.run("pip install --upgrade pip >> /dev/null",
-                   shell=True,
-                   executable="/bin/bash")
+    subprocess.run(
+        "pip install --upgrade pip >> /dev/null", shell=True, executable="/bin/bash"
+    )
 
     logging.info("---- Installing some requirements for the pipeline ----")
     subprocess.run(
@@ -105,8 +106,7 @@ if args.start > args.end:
 
 #  if the videos a .h264, convert to .mp4, else, just make a counts.csv
 if args.start <= 0 and args.end >= 0:
-    logging.info(
-        "(0) Starting the video conversions, always defaulting to .mp4")
+    logging.info("(0) Starting the video conversions, always defaulting to .mp4")
     try:
 
         logging.debug(
@@ -128,7 +128,8 @@ if args.start <= 0 and args.end >= 0:
 
         if contains_h264 and contains_mp4:
             raise ValueError(
-                "Both types of file are in this directory, please remove one")
+                "Both types of file are in this directory, please remove one"
+            )
         elif contains_h264:
             logging.info(
                 "Converting .h264 to .mp4, old h264 files can be found in the h264_files folder"
@@ -174,15 +175,15 @@ if args.start <= 1 and args.end >= 1:
 
             arguments = (
                 f" --subtractor {args.background_subtraction_type} "
-                f" --max-workers {args.max_workers_background_subtraction}")
+                f" --max-workers {args.max_workers_background_subtraction}"
+            )
             subprocess.run(
                 f"python3 {os.path.join(DIR_NAME, 'Video_Subtractions/Convert.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
             )
 
         else:
-            logging.info(
-                "No background subtraction type given, skipping this step")
+            logging.info("No background subtraction type given, skipping this step")
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 1")
@@ -202,13 +203,33 @@ if args.start <= 2 and args.end >= 2:
             f"pip install -r {os.path.join(DIR_NAME, 'Dataset_Creator/requirements.txt')} >> /dev/null",
             shell=True,
         )
-        if args.each_video_one_class:
+        if args.test_by_time:
             logging.info(
-                "Creating a one class dataset, given the --end-frame-buffer argument"
+                "Deciding the test by time, given the passing of the --test-by-time button"
             )
-            arguments = (f" --start-frame {args.starting_frame} "
-                         f" --end-frame-buffer {args.end_frame_buffer} "
-                         f" --splits {args.k} ")
+            arguments = (
+                f" --path {path} "
+                f" --counts counts.csv "  # adding these options in case they need to be changed in the future
+                f" --start-frame {args.starting_frame} "
+                f" --end-frame-buffer {args.end_frame_buffer} "
+                f" --splits {args.time_splits} "
+            )
+            subprocess.run(
+                f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/one_class_runner.py')} {arguments} >> dataprep.log 2>&1",
+                shell=True,
+            )
+
+        elif args.each_video_one_class:
+            logging.info(
+                "Creating a one class dataset, given the passing of the --end-frame-buffer argument"
+            )
+            arguments = (
+                f" --path {path} "
+                f" --counts counts.csv "  # adding these options in case they need to be changed in the future
+                f" --start-frame {args.starting_frame} "
+                f" --end-frame-buffer {args.end_frame_buffer} "
+                f" --splits {args.k} "
+            )
             subprocess.run(
                 f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/one_class_runner.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
@@ -218,21 +239,24 @@ if args.start <= 2 and args.end >= 2:
             # finds the logs, which should be named either logNo, logPos, or logNeg
             # TODO: add in the ability to make sure log list can work with non logNo/Pos/Neg files
             log_list = [
-                file.strip() for file in os.listdir()
-                if file.strip() == "logNo.txt" or file.strip() == "logPos.txt"
-                or file.strip() == "logNeg.txt"
+                file
+                for file in file_list
+                if file.startswith("log") and file.endswith(".txt")
             ]
-            logging.info(
-                f"(2) Creating the dataset with the files: {log_list}")
+            logging.info(f"(2) Creating the dataset with the files: {log_list}")
 
             if args.files is None:
                 string_log_list = ",".join(log_list).strip().replace(" ", "")
             else:
                 string_log_list = args.files
 
-            arguments = (f" --files '{string_log_list}' "
-                         f" --starting-frame {args.starting_frame} "
-                         f" --frame-interval {args.frame_interval} ")
+            arguments = (
+                f" --path {path} "
+                f" --counts counts.csv "  # adding these options in case they need to be changed in the future
+                f" --files '{string_log_list}' "
+                f" --starting-frame {args.starting_frame} "
+                f" --frame-interval {args.frame_interval} "
+            )
             subprocess.run(
                 f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/Make_Dataset.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
@@ -298,8 +322,7 @@ if args.start <= 4 and args.end >= 4:
             f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/dataset_checker.py')}",
             shell=True,
         )
-        logging.info(
-            "(4) ---- Installing the requirements for the VideoSamplerRewrite")
+        logging.info("(4) ---- Installing the requirements for the VideoSamplerRewrite")
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'VideoSamplerRewrite/requirements.txt')} >> /dev/null",
             shell=True,
@@ -317,12 +340,15 @@ if args.start <= 4 and args.end >= 4:
             f" --dataset-writing-batch-size {args.dataset_writing_batch_size} "
             f" --max-threads-pic-saving {args.max_threads_pic_saving} "
             f" --max-workers-tar-writing {args.max_workers_tar_writing} "
-            f" --max-batch-size-sampling {args.max_batch_size_sampling} ")
+            f" --max-batch-size-sampling {args.max_batch_size_sampling} "
+        )
         if args.crop:
-            arguments += (f" --crop --x-offset {args.crop_x_offset} "
-                          f" --y-offset {args.crop_y_offset} "
-                          f" --out-width {args.width} "
-                          f" --out-height {args.height}")
+            arguments += (
+                f" --crop --x-offset {args.crop_x_offset} "
+                f" --y-offset {args.crop_y_offset} "
+                f" --out-width {args.width} "
+                f" --out-height {args.height}"
+            )
         if args.debug:
             arguments += " --debug "
         if args.equalize_samples:
