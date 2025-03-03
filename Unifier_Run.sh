@@ -33,7 +33,7 @@ export OMP_NUM_THREADS=1
 # a big problems with .bashrcs lol
 export PATH="/usr/bin/python3:$PATH"
 
-rm slurm*
+rm slurm* >> /dev/null 2>&1
 
 cd Unified-bee-Runner || exit
 git submodule update --init --recursive >> ../dataprep.log 2>&1
@@ -41,6 +41,7 @@ cd ..
 
 python3 -m venv venv
 source venv/bin/activate
+python -m pip install --upgrade pip
 
 # if you are training with each video being a separate class,
 # use this flag: --each-video-one-class to make it work
