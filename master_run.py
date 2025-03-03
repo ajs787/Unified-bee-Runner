@@ -284,13 +284,13 @@ if args.start <= 2 and args.end >= 2:
             )
         else:
             logging.info("(2) Creating a dataset.csv based on the txt files")
-            # finds the logs, which should be named either logNo, logPos, or logNeg
-            # TODO: add in the ability to make sure log list can work with non logNo/Pos/Neg files
+            
             log_list = [
                 file
                 for file in file_list
                 if file.startswith("log") and file.endswith(".txt")
             ]
+            
             logging.info(f"(2) Creating the dataset with the files: {log_list}")
 
             if args.files is None:
