@@ -304,6 +304,7 @@ if args.start <= 2 and args.end >= 2:
                 f" --files '{string_log_list}' "
                 f" --starting-frame {args.starting_frame} "
                 f" --frame-interval {args.frame_interval} "
+                f" --end-frame-buffer {args.end_frame_buffer} "
             )
             subprocess.run(
                 f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/Make_Dataset.py')} {arguments} >> dataprep.log 2>&1",
