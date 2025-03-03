@@ -4,43 +4,91 @@ This script is organized in chapters, so you can use the start and end flags to 
 
 
 Arguments:
-- `--data_path`: Path to the directory containing the data.
-- `--max_workers_frame_counter`: Maximum number of workers for the frame counter.
-- `--background_subtraction_type`: Type of background subtraction to use.
-- `--max_workers_background_subtraction`: Maximum number of workers for background subtraction.
-- `--each_video_one_class`: Flag to indicate if each video should be treated as one class.
-- `--starting_frame`: The starting frame for dataset creation.
-- `--end_frame_buffer`: The buffer for the end frame.
-- `--files`: Specific files to use for dataset creation.
-- `--frame_interval`: Interval between frames for dataset creation.
-- `--k`: Number of folds for k-fold cross-validation.
-- `--model`: Model to use for training.
-- `--gpus`: Number of GPUs to use for training.
-- `--seed`: Random seed for reproducibility.
-- `--width`: Width of the video frames.
-- `--height`: Height of the video frames.
-- `--path_to_file`: Path to the file for working bee analysis.
-- `--frames_per_sample`: Number of frames per sample.
-- `--crop_x_offset`: X offset for cropping.
-- `--crop_y_offset`: Y offset for cropping.
-- `--epochs`: Number of epochs for training.
-- `--only_split`: Flag to indicate if only data splitting should be performed.
-- `--training_only`: Flag to indicate if only training should be performed.
-- `--number_of_samples`: Number of samples for video sampling.
-- `--normalize`: Flag to indicate if normalization should be applied.
-- `--out_channels`: Number of output channels for video sampling.
-- `--max_workers_video_sampling`: Maximum number of workers for video sampling.
-- `--crop`: Flag to indicate if cropping should be applied.
-- `--debug`: Flag to indicate if debug mode should be enabled.
-- `--equalize_samples`: Flag to indicate if samples should be equalized.
+    -h, --help
+                            Show this help message and exit.
+    --data_path DATA_PATH
+                            Path to the data, default is ".".
+    --start START
+                            (unifier) Start the pipeline at the given step, default 0.
+    --end END
+                            (unifier) End the pipeline at the given step, default 6 (will not stop).
+    --debug
+                            (unifier) Print debug information and activate debug mode for logger (and other scripts), default False.
+    --background-subtraction-type {MOG2,KNN}
+                            (background subtraction) Background subtraction type to use, default None. Options: MOG2 or KNN.
+    --width WIDTH
+                            (splitting the data) Width of the images, default 960.
+    --height HEIGHT
+                            (splitting the data) Height of the images, default 720.
+    --number-of-samples NUMBER_OF_SAMPLES
+                            (sampling) The maximum number of samples to be gathered by the sampler, default 40000.
+    --max-workers-video-sampling MAX_WORKERS_VIDEO_SAMPLING
+                            (sampling) The number of workers to use for multiprocessing of the sampler, default 3.
+    --frames-per-sample FRAMES_PER_SAMPLE
+                            (sampling, splitting the data) Number of frames per sample, default 1.
+    --normalize NORMALIZE
+                            (sampling) Normalize the images, default True.
+    --out-channels OUT_CHANNELS
+                            (sampling) The number of output channels, default 1.
+    --k K
+                            (making the splits) Number of folds for cross-validation, default 3.
+    --model MODEL
+                            (making the splits) Model to use, default "alexnet".
+    --fps FPS
+                            (dataset creation) Frames per second, default 25.
+    --starting-frame STARTING_FRAME
+                            (dataset creation) Starting frame, default 1.
+    --frame-interval FRAME_INTERVAL
+                            (dataset creation) Space between frames, default 0.
+    --test-by-time
+                            (dataset creation) Create a dataset.csv based on time (instead of log files) to test correlation between daytime and class accuracy.
+    --time-splits TIME_SPLITS
+                            (dataset creation) If --test-by-time is used, determine the number of splits to occur.
+    --files FILES
+                            (dataset creation) Name of the log files to use, default "logNo.txt, logNeg.txt, logPos.txt".
+    --each-video-one-class
+                            (dataset creation) Treat each video as one class; a special workflow.
+    --end-frame-buffer END_FRAME_BUFFER
+                            (dataset creation) Number of frames to buffer at the end of the video, default 0, NOTE/TODO: only works for each frame one class and time testing, not base version
+    --seed SEED
+                            (making the splits) Seed for randomizing the data sets, default "01011970".
+    --only_split
+                            (making the splits) Finish after splitting the CSV, default False.
+    --crop_x_offset CROP_X_OFFSET
+                            (making the splits) Offset (in pixels) of the crop location on the original image in the x dimension, default 0.
+    --crop_y_offset CROP_Y_OFFSET
+                            (making the splits) Offset (in pixels) of the crop location on the original image in the y dimension, default 0.
+    --training_only TRAINING_ONLY
+                            (making the splits) Only generate the training set files, default False.
+    --max-workers-frame-counter MAX_WORKERS_FRAME_COUNTER
+                            (frame counting) Number of workers for multiprocessing of the frame counter, default 20.
+    --max-workers-background-subtraction MAX_WORKERS_BACKGROUND_SUBTRACTION
+                            (background subtraction) Number of workers for multiprocessing of background subtraction, default 10.
+    --epochs EPOCHS
+                            (training) Number of epochs to train the model, default 10.
+    --gpus GPUS
+                            (training) Number of GPUs to use for training, default 1.
+    --gradcam-cnn-model-layer {model_a.0.0,model_a.1.0,model_a.2.0,model_a.3.0,model_a.4.0,model_b.0.0,model_b.1.0,model_b.2.0,model_b.3.0,model_b.4.0} [...]
+                            (training, make validation training) Model layers for gradcam plots, default ['model_a.4.0', 'model_b.4.0'].
+    --crop
+                            (sampling) Crop the images to the correct size.
+    --equalize-samples
+                            (sampling) Equalize the samples so that each class has the same number of samples.
+    --dataset-writing-batch-size DATASET_WRITING_BATCH_SIZE
+                            (sampling) Batch size for writing the dataset, default 10.
+    --max-threads-pic-saving MAX_THREADS_PIC_SAVING
+                            (sampling) Number of threads to use for saving pictures, default 4.
+    --max-batch-size-sampling MAX_BATCH_SIZE_SAMPLING
+                            (sampling) Maximum batch size for sampling the video, default 5.
+    --max-workers-tar-writing MAX_WORKERS_TAR_WRITING
+                            (sampling) Number of workers for writing tar files, default 4.
+    --y-offset Y_OFFSET
+                            Y offset for the crop, default 0.
+    --out-width OUT_WIDTH
+                            Width of the output image, default 400.
+    --out-height OUT_HEIGHT
+                            Height of the output image, default 400.
 
-Steps:
-0. Video Conversions: Converts videos from .h264 to .mp4 or generates counts.csv if videos are already in .mp4 format.
-1. Background Subtraction: Performs background subtraction on the videos.
-2. Dataset Creation: Creates the dataset from the provided logs.
-3. Data Splitting: Splits the data into training and validation sets.
-4. Video Sampling: Samples the videos for training.
-5. Model Training: Trains the model using the specified parameters.
 
 Logging:
 The script uses logging to provide information about the progress and any errors encountered during the execution of the pipeline.
