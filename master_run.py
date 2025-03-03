@@ -215,7 +215,7 @@ if args.start <= 2 and args.end >= 2:
                 f" --splits {args.time_splits} "
             )
             subprocess.run(
-                f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/one_class_runner.py')} {arguments} >> dataprep.log 2>&1",
+                f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/time_based_division.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
             )
 
