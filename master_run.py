@@ -2,6 +2,7 @@
 
 This script is organized in chapters, so you can use the start and end flags to run specific chapters. The chapters are as follows:
 
+TODO: remember to add the description here: https://docs.google.com/document/d/1EYG70QrYjf55tXeoXLtCMUahWvYg3_ylRU-vQrBThdI/edit?usp=sharing 
 
 Arguments:
     -h, --help
@@ -49,7 +50,7 @@ Arguments:
     --each-video-one-class
                             (dataset creation) Treat each video as one class; a special workflow.
     --end-frame-buffer END_FRAME_BUFFER
-                            (dataset creation) Number of frames to buffer at the end of the video, default 0, NOTE/TODO: only works for each frame one class and time testing, not base version
+                            (dataset creation) Number of frames to buffer at the end of the video, default 0
     --seed SEED
                             (making the splits) Seed for randomizing the data sets, default "01011970".
     --only_split
