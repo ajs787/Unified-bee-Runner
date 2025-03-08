@@ -357,6 +357,8 @@ if args.start <= 3 and args.end >= 3:
             f" --crop_y_offset {args.crop_y_offset} "
             f" --epochs {args.epochs} "
             f" --gradcam_cnn_model_layer {' '.join(args.gradcam_cnn_model_layer)} "
+            # inferred from the Dataset Creation aspects of the workflow (see: step 2)
+            f" --num-outputs {num_outputs} " 
         )
         if args.only_split:
             arguments += " --only_split "
@@ -404,8 +406,6 @@ if args.start <= 4 and args.end >= 4:
             f" --max-threads-pic-saving {args.max_threads_pic_saving} "
             f" --max-workers-tar-writing {args.max_workers_tar_writing} "
             f" --max-batch-size-sampling {args.max_batch_size_sampling} "
-            # inferred from the Dataset Creation aspects of the workflow (see: step 2)
-            f" --num-outputs {num_outputs} " 
         )
         if args.crop:
             arguments += (
