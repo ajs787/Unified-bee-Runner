@@ -177,13 +177,29 @@ with open("RUN_DESCRIPTION.txt", "a") as run_desc:
     run_desc.write(f"Crop: {args.crop}\n")
     run_desc.write(f"K-Splits: {args.k}\n")
 
-    with open("RUN_DESCRIPTION.txt", "a") as run_desc:
-        run_desc.write("\n-- Miscellaneous Settings --\n")
-        run_desc.write(f"Seed: {args.seed}\n")
-        run_desc.write(f"Normalize: {args.normalize}\n")
-        run_desc.write(f"Width: {args.width}\n")
-        run_desc.write(f"Height: {args.height}\n")
-        run_desc.write(f"Frames per Second: {args.fps}\n")
+with open("RUN_DESCRIPTION.txt", "a") as run_desc:
+    run_desc.write("\n-- Miscellaneous Settings --\n")
+    run_desc.write(f"Seed: {args.seed}\n")
+    run_desc.write(f"Normalize: {args.normalize}\n")
+    run_desc.write(f"Width: {args.width}\n")
+    run_desc.write(f"Height: {args.height}\n")
+    run_desc.write(f"Frames per Second: {args.fps}\n")
+
+with open("RUN_DESCRIPTION.txt", "a") as run_desc:
+    run_desc.write("\n-- Additional Options --\n")
+    run_desc.write(f"Crop Enabled: {args.crop}\n")
+    if args.crop:
+        run_desc.write(f"Crop x: {args.crop_x_offset}\n")
+        run_desc.write(f"Crop y: {args.crop_y_offset}\n")
+        run_desc.write(f"Out width: {args.out_width}\n")
+        run_desc.write(f"Out height: {args.out_height}\n")
+    run_desc.write("\n-- Testing Modes --\n")
+    run_desc.write(f"Debug Mode: {args.debug}\n")
+    run_desc.write(f"Testing by Time: {args.test_by_time}\n")
+    run_desc.write(f"Each Video One Class: {args.each_video_one_class}\n")
+    run_desc.write("\n-- Other Modes --\n")
+    run_desc.write(f"Training Only: {args.training_only}\n")
+
 
 # convert the videos
 
