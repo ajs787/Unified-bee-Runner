@@ -124,7 +124,7 @@ logging.basicConfig(
 DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 
 with open("RUN_DESCRIPTION.txt", "w+") as rd:
-    rd.write(f"start-is: {format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))}\n")
+    rd.write(f"start-is: {format(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))}\n")
     rd.write(f"path: {DIR_NAME}\n")
 
     branch = subprocess.check_output(
