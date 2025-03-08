@@ -115,12 +115,28 @@ import os
 import subprocess
 
 from ArgParser import get_args
+from datetime import datetime
 
 logging.basicConfig(
     format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
 )
 
 DIR_NAME = os.path.dirname(os.path.abspath(__file__))
+
+with open("RUN_DESCRIPTION.txt", "w+") as rd:
+    rd.write(f"start-is: {format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))}\n")
+    rd.write(f"path: {DIR_NAME}\n")
+
+    branch = subprocess.check_output(
+        ['git', 'rev-parse', '--abbrev-ref', 'HEAD'], cwd=DIR_NAME
+    ).decode('utf-8').strip()
+
+    rd.write(f"branch of Unified-bee-Runner: {branch}\n")
+
+    commit = subprocess.check_output(
+        ['git', 'rev-parse', 'HEAD'], cwd=DIR_NAME
+    ).decode('utf-8').strip()
+    rd.write(f"Version / Commit: {commit}\n")
 
 try:
     args = get_args()
@@ -148,6 +164,27 @@ try:
 except Exception as e:
     logging.error(f"Error: {e}")
     raise ValueError("Something went wrong in the beginning")
+
+# write the new information into the description
+with open("RUN_DESCRIPTION.txt", "a") as run_desc:
+    run_desc.write("\n-- Run Settings --\n")
+    run_desc.write(f"Attempted Samples Per Video: {args.number_of_samples}\n")
+    run_desc.write(f"Frames per Sample: {args.frames_per_sample}\n")
+    run_desc.write(f"Equalized: {args.equalize_samples}\n")
+    run_desc.write(f"Background subtraction: {args.background_subtraction_type}\n")
+    run_desc.write(f"Model: {args.model}\n")
+    run_desc.write(f"Epochs: {args.epochs}\n")
+    run_desc.write(f"Crop: {args.crop}\n")
+    run_desc.write(f"K-Splits: {args.k}\n")
+
+    with open("RUN_DESCRIPTION.txt", "a") as run_desc:
+        run_desc.write("\n-- Miscellaneous Settings --\n")
+        run_desc.write(f"Seed: {args.seed}\n")
+        run_desc.write(f"Normalize: {args.normalize}\n")
+        run_desc.write(f"Width: {args.width}\n")
+        run_desc.write(f"Height: {args.height}\n")
+        run_desc.write(f"Frames per Second: {args.fps}\n")
+
 # convert the videos
 
 if args.start > args.end:
