@@ -240,6 +240,9 @@ else:
         f"Skipping step 1, given the start ({args.start}) and end ({args.end}) values"
     )
 
+# this is for the num_outputs arguement for the 
+num_outputs = 0
+
 if args.start <= 2 and args.end >= 2:
     logging.info("(2) Starting the dataset creation")
     try:
@@ -267,6 +270,9 @@ if args.start <= 2 and args.end >= 2:
                 shell=True,
             )
 
+            # outputs equals the number of splits we divide the time
+            num_outputs = args.time_splits
+
         elif args.each_video_one_class:
             logging.info(
                 "Creating a one class dataset, given the passing of the --end-frame-buffer argument"
@@ -282,6 +288,9 @@ if args.start <= 2 and args.end >= 2:
                 f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/one_class_runner.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
             )
+
+            # outputs equal to the number of k splits
+            num_outputs = args.k
         else:
             logging.info("(2) Creating a dataset.csv based on the txt files")
             
@@ -310,6 +319,9 @@ if args.start <= 2 and args.end >= 2:
                 f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/Make_Dataset.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
             )
+
+            # the number of outputs are equal the number of logs
+            num_outputs = len(log_list)
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 2")
@@ -317,6 +329,8 @@ else:
     logging.info(
         f"Skipping step 2, given the start ({args.start}) and end ({args.end}) values"
     )
+
+
 
 logging.info("(3) Splitting up the data")
 if args.start <= 3 and args.end >= 3:
@@ -390,6 +404,8 @@ if args.start <= 4 and args.end >= 4:
             f" --max-threads-pic-saving {args.max_threads_pic_saving} "
             f" --max-workers-tar-writing {args.max_workers_tar_writing} "
             f" --max-batch-size-sampling {args.max_batch_size_sampling} "
+            # inferred from the Dataset Creation aspects of the workflow (see: step 2)
+            f" --num-outputs {num_outputs} " 
         )
         if args.crop:
             arguments += (
