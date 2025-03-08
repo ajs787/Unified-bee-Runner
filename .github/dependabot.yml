@@ -4,7 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    open-pull-requests-limit: 10
+    assignees:
+      - "Elias2660" # Assigns the pull request to your GitHub username
+    labels:
+      - "dependencies" # Adds a "dependencies" label to the pull requests
     ignore:
-      - dependency-name: "example-package"
-        versions: ["1.x"]
+      # only update on big new versions
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
