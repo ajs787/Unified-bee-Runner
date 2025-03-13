@@ -2,7 +2,7 @@
 
 This script is organized in chapters, so you can use the start and end flags to run specific chapters. The chapters are as follows:
 
-TODO: remember to add the description here: https://docs.google.com/document/d/1EYG70QrYjf55tXeoXLtCMUahWvYg3_ylRU-vQrBThdI/edit?usp=sharing 
+TODO: remember to add the description here: https://docs.google.com/document/d/1EYG70QrYjf55tXeoXLtCMUahWvYg3_ylRU-vQrBThdI/edit?usp=sharing
 
 Arguments:
     -h, --help
