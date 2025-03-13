@@ -451,6 +451,7 @@ if args.start <= 4 and args.end >= 4:
             "chmod -R 777 . >> /dev/null 2>&1", shell=True
         )  # keep chmoding to make sure that the permissions are correct to sample videos
         arguments = (
+            f" --dataset_path {path} "
             f" --frames-per-sample {args.frames_per_sample} "
             f" --number-of-samples {args.number_of_samples} "
             f" --normalize {args.normalize} "
