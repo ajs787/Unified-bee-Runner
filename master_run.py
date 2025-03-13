@@ -113,9 +113,9 @@ This script is ogranized in chapters, so you can use the start and end flags to 
 import logging
 import os
 import subprocess
+from datetime import datetime
 
 from ArgParser import get_args
-from datetime import datetime
 
 logging.basicConfig(
     format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
