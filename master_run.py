@@ -124,7 +124,8 @@ logging.basicConfig(
 DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 
 with open("RUN_DESCRIPTION.txt", "w+") as rd:
-    rd.write(f"start-is: {format(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))}\n")
+    rd.write(
+        f"start-is: {format(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))}\n")
     rd.write(f"path: {DIR_NAME}\n")
 
     branch = subprocess.check_output(
@@ -171,7 +172,8 @@ with open("RUN_DESCRIPTION.txt", "a") as run_desc:
     run_desc.write(f"Attempted Samples Per Video: {args.number_of_samples}\n")
     run_desc.write(f"Frames per Sample: {args.frames_per_sample}\n")
     run_desc.write(f"Equalized: {args.equalize_samples}\n")
-    run_desc.write(f"Background subtraction: {args.background_subtraction_type}\n")
+    run_desc.write(
+        f"Background subtraction: {args.background_subtraction_type}\n")
     run_desc.write(f"Model: {args.model}\n")
     run_desc.write(f"Epochs: {args.epochs}\n")
     run_desc.write(f"Crop: {args.crop}\n")
@@ -208,7 +210,8 @@ if args.start > args.end:
 
 #  if the videos a .h264, convert to .mp4, else, just make a counts.csv
 if args.start <= 0 and args.end >= 0:
-    logging.info("(0) Starting the video conversions, always defaulting to .mp4")
+    logging.info(
+        "(0) Starting the video conversions, always defaulting to .mp4")
     try:
 
         logging.debug(
@@ -285,7 +288,8 @@ if args.start <= 1 and args.end >= 1:
             )
 
         else:
-            logging.info("No background subtraction type given, skipping this step")
+            logging.info(
+                "No background subtraction type given, skipping this step")
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 1")
@@ -294,7 +298,7 @@ else:
         f"Skipping step 1, given the start ({args.start}) and end ({args.end}) values"
     )
 
-# this is for the num_outputs arguement for the 
+# this is for the num_outputs arguement for the
 num_outputs = 0
 
 if args.start <= 2 and args.end >= 2:
@@ -314,7 +318,8 @@ if args.start <= 2 and args.end >= 2:
             )
             arguments = (
                 f" --path {path} "
-                f" --counts counts.csv "  # adding these options in case they need to be changed in the future
+                # adding these options in case they need to be changed in the future
+                f" --counts counts.csv "
                 f" --start-frame {args.starting_frame} "
                 f" --end-frame-buffer {args.end_frame_buffer} "
                 f" --splits {args.time_splits} "
@@ -333,7 +338,8 @@ if args.start <= 2 and args.end >= 2:
             )
             arguments = (
                 f" --path {path} "
-                f" --counts counts.csv "  # adding these options in case they need to be changed in the future
+                # adding these options in case they need to be changed in the future
+                f" --counts counts.csv "
                 f" --start-frame {args.starting_frame} "
                 f" --end-frame-buffer {args.end_frame_buffer} "
                 f" --splits {args.k} "
@@ -347,14 +353,15 @@ if args.start <= 2 and args.end >= 2:
             num_outputs = args.k
         else:
             logging.info("(2) Creating a dataset.csv based on the txt files")
-            
+
             log_list = [
                 file
                 for file in file_list
                 if file.startswith("log") and file.endswith(".txt")
             ]
-            
-            logging.info(f"(2) Creating the dataset with the files: {log_list}")
+
+            logging.info(
+                f"(2) Creating the dataset with the files: {log_list}")
 
             if args.files is None:
                 string_log_list = ",".join(log_list).strip().replace(" ", "")
@@ -363,7 +370,8 @@ if args.start <= 2 and args.end >= 2:
 
             arguments = (
                 f" --path {path} "
-                f" --counts counts.csv "  # adding these options in case they need to be changed in the future
+                # adding these options in case they need to be changed in the future
+                f" --counts counts.csv "
                 f" --files '{string_log_list}' "
                 f" --starting-frame {args.starting_frame} "
                 f" --frame-interval {args.frame_interval} "
@@ -383,7 +391,6 @@ else:
     logging.info(
         f"Skipping step 2, given the start ({args.start}) and end ({args.end}) values"
     )
-
 
 
 logging.info("(3) Splitting up the data")
@@ -412,7 +419,7 @@ if args.start <= 3 and args.end >= 3:
             f" --epochs {args.epochs} "
             f" --gradcam_cnn_model_layer {' '.join(args.gradcam_cnn_model_layer)} "
             # inferred from the Dataset Creation aspects of the workflow (see: step 2)
-            f" --num-outputs {num_outputs} " 
+            f" --num-outputs {num_outputs} "
         )
         if args.only_split:
             arguments += " --only_split "
@@ -441,7 +448,8 @@ if args.start <= 4 and args.end >= 4:
             f"python3 {os.path.join(DIR_NAME, 'Dataset_Creator/dataset_checker.py')}",
             shell=True,
         )
-        logging.info("(4) ---- Installing the requirements for the VideoSamplerRewrite")
+        logging.info(
+            "(4) ---- Installing the requirements for the VideoSamplerRewrite")
         subprocess.run(
             f"pip install -r {os.path.join(DIR_NAME, 'VideoSamplerRewrite/requirements.txt')} >> /dev/null",
             shell=True,
