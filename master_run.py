@@ -109,7 +109,6 @@ This script is ogranized in chapters, so you can use the start and end flags to 
 - `--start`: The step with which to start the pipeline.
 - `--end`: The step with which to end the pipeline.
 """
-
 import logging
 import os
 import subprocess
