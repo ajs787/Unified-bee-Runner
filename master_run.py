@@ -2,8 +2,6 @@
 
 This script is organized in chapters, so you can use the start and end flags to run specific chapters. The chapters are as follows:
 
-TODO: remember to add the description here: https://docs.google.com/document/d/1EYG70QrYjf55tXeoXLtCMUahWvYg3_ylRU-vQrBThdI/edit?usp=sharing
-
 Arguments:
     -h, --help
                             Show this help message and exit.
@@ -388,10 +386,10 @@ if args.start <= 3 and args.end >= 3:
     try:
         logging.info("(3) Starting the data splitting")
         logging.info(
-            "(3) ---- Installing the requirements for the working_bee_analysis ----"
+            "(3) ---- Installing the requirements for the bee_analysis ----"
         )
         subprocess.run(
-            f"pip install -r {os.path.join(DIR_NAME, 'working_bee_analysis/requirements.txt')} >> /dev/null",
+            f"pip install -r {os.path.join(DIR_NAME, 'bee_analysis/requirements.txt')} >> /dev/null",
             shell=True,
         )
 
@@ -402,7 +400,7 @@ if args.start <= 3 and args.end >= 3:
             f" --seed {args.seed} "
             f" --width {args.width} "
             f" --height {args.height} "
-            f" --path_to_file {os.path.join(DIR_NAME, 'working_bee_analysis')} "
+            f" --path_to_file {os.path.join(DIR_NAME, 'bee_analysis')} "
             f" --frames_per_sample {args.frames_per_sample} "
             f" --crop_x_offset {args.crop_x_offset} "
             f" --crop_y_offset {args.crop_y_offset} "
@@ -417,7 +415,7 @@ if args.start <= 3 and args.end >= 3:
         if args.each_video_one_class:
             arguments += " --remove-dataset-sub "
         subprocess.run(
-            f"python3 {os.path.join(DIR_NAME, 'working_bee_analysis/make_validation_training.py')} {arguments} >> dataprep.log 2>&1",
+            f"python3 {os.path.join(DIR_NAME, 'bee_analysis/make_validation_training.py')} {arguments} >> dataprep.log 2>&1",
             shell=True,
         )
     except Exception as e:
