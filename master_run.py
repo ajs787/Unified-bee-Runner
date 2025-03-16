@@ -151,6 +151,12 @@ try:
                    shell=True,
                    executable="/bin/bash")
 
+    logging.info("---- Attempting to Protect Dataset ----")
+    # the txt files are the log*.txt files, better safe than sorry
+    protected_file_list = [file for file in os.listdir() if (file.endswith(".txt") or file.endswith(".mp4") or file.endswith(".txt"))]
+    for file in protected_file_list:
+        os.chmod(file, S_IREAD|S_IRGRP|S_IROTH)
+
     logging.info("---- Installing some requirements for the pipeline ----")
     subprocess.run(
         f"pip install -r {os.path.join(DIR_NAME, 'requirements.txt')} >> /dev/null",
@@ -199,7 +205,10 @@ with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write("\n-- Other Modes --\n")
     run_desc.write(f"Training Only: {args.training_only}\n")
 
-# convert the videos
+# convert the video
+# At this point, only the Unified_Bee_Runner, Dataprep.log, venv, and RUN_DESCRIPTION.log need to be modified
+subprocess.run("chmod -R 777 Unified-bee-Runner *.log venv >> /dev/null 2>&1", shell=True)
+
 
 if args.start > args.end:
     raise ValueError("You can't have the start be higher than the end")
@@ -250,7 +259,7 @@ if args.start <= 0 and args.end >= 0:
             )
 
         logging.info("(0) ---- Changing Permissions for the Repository----")
-        subprocess.run("chmod -R 777 . >> /dev/null 2>&1", shell=True)
+        subprocess.run("chmod 777 counts.csv >> /dev/null 2>&1", shell=True)
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 0")
@@ -292,7 +301,7 @@ else:
         f"Skipping step 1, given the start ({args.start}) and end ({args.end}) values"
     )
 
-# this is for the num_outputs arguement for the
+# this is for the num_outputs argument which will be used to tell the model how many classes there are
 num_outputs = 0
 
 if args.start <= 2 and args.end >= 2:
@@ -374,6 +383,10 @@ if args.start <= 2 and args.end >= 2:
 
             # the number of outputs are equal the number of logs
             num_outputs = len(log_list)
+
+        # changing the perms for the created dataset*.csv files
+        logging.info("Changing the permissions for the created files")
+        subprocess.run("chmod -R 777 dataset*.csv *.bak >> /dev/null 2>&1", shell=True)
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 2")
@@ -419,6 +432,9 @@ if args.start <= 3 and args.end >= 3:
             f"python3 {os.path.join(DIR_NAME, 'bee_analysis/make_validation_training.py')} {arguments} >> dataprep.log 2>&1",
             shell=True,
         )
+
+        logging.info("Changing permissions for the created files")
+        subprocess.run("chmod -R 777 dataset*.csv *.log *.sh >> /dev/null 2>&1", shell=True)
     except Exception as e:
         logging.error(f"Error: {e}")
         raise ValueError("Something went wrong in step 3")
@@ -443,9 +459,6 @@ if args.start <= 4 and args.end >= 4:
             shell=True,
         )
 
-        subprocess.run(
-            "chmod -R 777 . >> /dev/null 2>&1", shell=True
-        )  # keep chmoding to make sure that the permissions are correct to sample videos
         arguments = (
             f" --dataset_path {path} "
             f" --frames-per-sample {args.frames_per_sample} "
@@ -483,10 +496,9 @@ else:
 logging.info("(5) Starting the model training")
 if args.start <= 5 and args.end >= 5:
     try:
-        subprocess.run("chmod -R 777 . >> /dev/null 2>&1", shell=True)
+        subprocess.run("chmod -R 777 *.log *.sh Unified-bee-Runner >> /dev/null 2>&1", shell=True)
         subprocess.run("./training-run.sh", shell=True)
         logging.info("Submitted executors for training")
-        subprocess.run("chmod -R 777 . >> /dev/null 2>&1", shell=True)
         logging.info("Pipeline complete")
     except Exception as e:
         logging.error(f"Error: {e}")
