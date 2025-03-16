@@ -96,7 +96,7 @@ Unified Bee Runner Pipeline Script
 This script orchestrates the entire pipeline for processing and analyzing bee-related datasets. The pipeline is divided into several steps, each performing a specific task. The steps can be controlled using the `--start` and `--end` arguments, allowing users to run specific parts of the pipeline.
 
 Chapter System:
-This script is ogranized in chapters, so you can use the start and end flags to run specific chapters. The chapters are as follows:
+This script is organized in chapters, so you can use the start and end flags to run specific chapters. The chapters are as follows:
 0. Video Conversions
 1. Background Subtraction
 2. Dataset Creation
@@ -111,6 +111,7 @@ import logging
 import os
 import subprocess
 from datetime import datetime
+from stat import S_IREAD, S_IRGRP, S_IROTH
 
 from ArgParser import get_args
 
@@ -120,7 +121,7 @@ logging.basicConfig(format="%(asctime)s: %(message)s",
 
 DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 
-with open("RUN_DESCRIPTION.txt", "w+") as rd:
+with open("RUN_DESCRIPTION.log", "w+") as rd:
     rd.write(
         f"start-is: {format(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))}\n")
     rd.write(f"path: {DIR_NAME}\n")
@@ -163,7 +164,7 @@ except Exception as e:
     raise ValueError("Something went wrong in the beginning")
 
 # write the new information into the description
-with open("RUN_DESCRIPTION.txt", "a") as run_desc:
+with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write("\n-- Run Settings --\n")
     run_desc.write(f"Attempted Samples Per Video: {args.number_of_samples}\n")
     run_desc.write(f"Frames per Sample: {args.frames_per_sample}\n")
@@ -175,7 +176,7 @@ with open("RUN_DESCRIPTION.txt", "a") as run_desc:
     run_desc.write(f"Crop: {args.crop}\n")
     run_desc.write(f"K-Splits: {args.k}\n")
 
-with open("RUN_DESCRIPTION.txt", "a") as run_desc:
+with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write("\n-- Miscellaneous Settings --\n")
     run_desc.write(f"Seed: {args.seed}\n")
     run_desc.write(f"Normalize: {args.normalize}\n")
@@ -183,7 +184,7 @@ with open("RUN_DESCRIPTION.txt", "a") as run_desc:
     run_desc.write(f"Height: {args.height}\n")
     run_desc.write(f"Frames per Second: {args.fps}\n")
 
-with open("RUN_DESCRIPTION.txt", "a") as run_desc:
+with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write("\n-- Additional Options --\n")
     run_desc.write(f"Crop Enabled: {args.crop}\n")
     if args.crop:
