@@ -4,9 +4,6 @@
 [submodule "Dataset_Creator"]
 	path = Dataset_Creator
 	url = https://github.com/Elias2660/Dataset_Creator
-[submodule "VideoSamplerRewrite"]
-	path = VideoSamplerRewrite
-	url = https://github.com/Elias2660/VideoSamplerRewrite
 [submodule "Video_Subtractions"]
 	path = Video_Subtractions
 	url = https://github.com/Elias2660/Video_Subtractions
