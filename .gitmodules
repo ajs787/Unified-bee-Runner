@@ -19,6 +19,3 @@
 [submodule "bee_analysis"]
 	path = bee_analysis
 	url = https://github.com/bfirner/bee_analysis
-[submodule "VideoSamplerRewrite"]
-	path = VideoSamplerRewrite
-	url = https://github.com/Elias2660/VideoSamplerRewrite
