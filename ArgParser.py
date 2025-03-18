@@ -313,9 +313,9 @@ def get_args():
 
     # FRAME COUNTING
     parser.add_argument(
-        "--optimize-sampling",
+        "--optimize-counting",
         action="store_true",
-        help="(unifier)Print debug information, activates debug for logger (and other scripts), defgault=False",
+        help="(frame counting) optimize frame counting for .mp4, default=False",
         default=False,
     )
     parser.add_argument(

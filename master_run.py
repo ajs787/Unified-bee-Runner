@@ -255,8 +255,8 @@ if args.start <= 0 and args.end >= 0:
                 shell=True,
             )
         elif contains_mp4:
-            if args.optimize_sampling:
-                logging.info("Making a ")
+            if args.optimize_counting:
+                logging.info("Making a fast counts.csv")
                 subprocess.run(
                 f"python3 {os.path.join(DIR_NAME, 'Video_Frame_Counter/optimized_make_counts.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
