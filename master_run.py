@@ -235,7 +235,11 @@ if args.start <= 0 and args.end >= 0:
         contains_h264 = any(".h264" in file for file in file_list)
         contains_mp4 = any(".mp4" in file for file in file_list)
 
-        arguments = f"--max-workers {args.max_workers_frame_counter} "
+        arguments = (
+            f" --path {path} "
+            f" --max-workers {args.max_workers_frame_counter} "
+            )
+
 
         logging.info("(0) ---- Running Video Conversions Sections ----")
 
@@ -251,11 +255,18 @@ if args.start <= 0 and args.end >= 0:
                 shell=True,
             )
         elif contains_mp4:
-            logging.info("No conversion needed, making counts.csv")
-            subprocess.run(
-                f"python3 {os.path.join(DIR_NAME, 'Video_Frame_Counter/make_counts.py')} {arguments} >> dataprep.log 2>&1",
+            if args.optimize_sampling:
+                logging.info("Making a ")
+                subprocess.run(
+                f"python3 {os.path.join(DIR_NAME, 'Video_Frame_Counter/optimized_make_counts.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
             )
+            else:
+                logging.info("No conversion needed, making counts.csv")
+                subprocess.run(
+                    f"python3 {os.path.join(DIR_NAME, 'Video_Frame_Counter/make_counts.py')} {arguments} >> dataprep.log 2>&1",
+                    shell=True,
+                )
         else:
             raise ValueError(
                 "Something went wrong with the file typing, as it seems that there are no .h264 or .mp4 files in the directory"

@@ -280,7 +280,7 @@ def get_args():
         "--seed",
         type=str,
         default="01011970",
-        help="(making the splits) Seed to use for randominizing the data sets, default: 01011970",
+        help="(making the splits) Seed to use for randomizing the data sets, default: 01011970",
     )
     parser.add_argument(
         "--only_split",
@@ -312,6 +312,12 @@ def get_args():
     )
 
     # FRAME COUNTING
+    parser.add_argument(
+        "--optimize-sampling",
+        action="store_true",
+        help="(unifier)Print debug information, activates debug for logger (and other scripts), defgault=False",
+        default=False,
+    )
     parser.add_argument(
         "--max-workers-frame-counter",
         type=int,
