@@ -114,6 +114,7 @@ from datetime import datetime
 from stat import S_IREAD, S_IRGRP, S_IROTH
 
 from ArgParser import get_args
+import getpass
 
 logging.basicConfig(format="%(asctime)s: %(message)s",
                     level=logging.INFO,
@@ -135,6 +136,8 @@ with open("RUN_DESCRIPTION.log", "w+") as rd:
     commit = (subprocess.check_output(["git", "rev-parse", "HEAD"],
                                       cwd=DIR_NAME).decode("utf-8").strip())
     rd.write(f"Version / Commit: {commit}\n")
+    user = getpass.getuser()
+    rd.write(f"User: {user}\n")
 
 try:
     args = get_args()
