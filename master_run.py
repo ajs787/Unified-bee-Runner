@@ -127,6 +127,9 @@ with open("RUN_DESCRIPTION.log", "w+") as rd:
         f"start-is: {format(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))}\n")
     rd.write(f"path: {DIR_NAME}\n")
 
+    user = getpass.getuser()
+    rd.write(f"User: {user}\n")
+    
     branch = (subprocess.check_output(
         ["git", "rev-parse", "--abbrev-ref", "HEAD"],
         cwd=DIR_NAME).decode("utf-8").strip())
@@ -136,8 +139,6 @@ with open("RUN_DESCRIPTION.log", "w+") as rd:
     commit = (subprocess.check_output(["git", "rev-parse", "HEAD"],
                                       cwd=DIR_NAME).decode("utf-8").strip())
     rd.write(f"Version / Commit: {commit}\n")
-    user = getpass.getuser()
-    rd.write(f"User: {user}\n")
 
 try:
     args = get_args()
