@@ -22,3 +22,6 @@
 [submodule "VideoSamplerRewrite"]
 	path = VideoSamplerRewrite
 	url = https://github.com/Elias2660/VideoSamplerRewrite
+[submodule "non_workflow_links/ai-for-behavioral-discovery"]
+	path = non_workflow_links/ai-for-behavioral-discovery
+	url = https://github.com/benjaminyu14/ai-for-behavioral-discovery
