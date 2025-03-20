@@ -391,7 +391,7 @@ def get_args():
 
     parser.add_argument(
         "--loss-fn",
-        type=int,
+        type=str,
         default="CrossEntropyLoss",
         choices=[
             "NLLLoss",
