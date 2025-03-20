@@ -536,8 +536,9 @@ else:
 logging.info("(5) Starting the model training")
 
 if args.start <= 5 and args.end >= 5:
-    logging.info("(5) Creating .bin files")
+    
     if args.binary_training_optimization:
+        logging.info("(5) Creating .bin files given passing of --binary-training-optimization")
         file_list = [file for file in os.listdir() if file.endswith(".tar")]
 
         for file in file_list:
@@ -553,6 +554,9 @@ if args.start <= 5 and args.end >= 5:
                 f"python3 {os.path.join(DIR_NAME, 'bee_analysis/utility/webdataset_to_flatbin.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
             )
+        subprocess.run(
+            "chmod -R 777 *.bin >> /dev/null 2>&1", shell=True
+        )
 
     try:
         subprocess.run(
