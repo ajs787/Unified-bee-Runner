@@ -47,7 +47,7 @@ python -m pip install --upgrade pip
 # use this flag: --each-video-one-class to make it work
 
 python3 Unified-bee-Runner/master_run.py \
-  --equalize-samples --optimize-counting \
+  --equalize-samples --optimize-counting --binary-training-optimization --use-dataloader-workers \
   --height 720 \
   --width 960 \
   --number-of-samples 100 --max-workers-video-sampling 2 \

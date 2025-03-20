@@ -213,6 +213,19 @@ def get_args():
     )
     parser.add_argument(
         "--model",
+        choices=[
+            "alexnet",
+            "resnet18",
+            "resnet34",
+            "bennet",
+            "resnext50",
+            "resnext34",
+            "resnext18",
+            "convnextxt",
+            "convnextt",
+            "convnexts",
+            "convnextb",
+        ],
         type=str,
         help="(making the splits) model to use, default alexnet",
         default="alexnet",
@@ -341,12 +354,55 @@ def get_args():
         type=int,
         help="(training) The number of epochs to train the model, default=10",
         default=10,
+        required=False,
     )
     parser.add_argument(
         "--gpus",
         type=int,
+        required=False,
         help="(training) The number of gpus to use for training, default=1",
         default=1,
+    )
+
+    # for binary optimization
+    parser.add_argument(
+        "--binary-training-optimization",
+        action="store_true",
+        help="(training) Convert and train with binary files",
+        default=False,
+        required=False,
+    )
+
+    parser.add_argument(
+        "--use-dataloader-workers",
+        action="store_true",
+        default=False,
+        required=False,
+        help="(training) Whether to use dataloader workers in the training script.",
+    )
+
+    parser.add_argument(
+        "--max-dataloader-workers",
+        type=int,
+        default=3,
+        required=False,
+        help="(training) The number of dataloader workers, default=3",
+    )
+
+    parser.add_argument(
+        "--loss-fn",
+        type=int,
+        default="CrossEntropyLoss",
+        choices=[
+            "NLLLoss",
+            "BCEWithLogitsLoss",
+            "CrossEntropyLoss",
+            "L1Loss",
+            "MSELoss",
+            "BCELoss",
+        ],
+        required=False,
+        help="(training) the loss function used for training",
     )
 
     parser.add_argument(
