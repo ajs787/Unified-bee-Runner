@@ -45,8 +45,8 @@ python -m pip install --upgrade pip
 
 # purging cache, this fixes (hopefully torch install issues)
 pip cache purge
-# torch is hard to install; changing tmpdir to 
-TMPDIR=. python3 -m pip install torch 
+# torch is hard to install; changing tmpdir so that it would be easier to install
+TMPDIR=. python3 -m pip install torch  
 
 # if you are training with each video being a separate class,
 # use this flag: --each-video-one-class to make it work
@@ -55,6 +55,6 @@ python3 Unified-bee-Runner/master_run.py \
   --equalize-samples --optimize-counting --binary-training-optimization --use-dataloader-workers \
   --height 720 \
   --width 960 \
-  --number-of-samples 1000 --max-workers-video-sampling 5 \
+  --number-of-samples 1000 --max-workers-video-sampling 6 \
   --frames-per-sample 5 \
   --gpus 1 >>dataprep.log 2>&1
