@@ -171,7 +171,10 @@ try:
         if (file.endswith(".txt") or file.endswith(".mp4") or file.endswith(".txt"))
     ]
     for file in protected_file_list:
-        os.chmod(file, S_IREAD | S_IRGRP | S_IROTH)
+        try: 
+            os.chmod(file, S_IREAD | S_IRGRP | S_IROTH)
+        except:
+            pass
 
     logging.info("---- Installing some requirements for the pipeline ----")
     subprocess.run(
