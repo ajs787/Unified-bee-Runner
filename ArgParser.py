@@ -144,7 +144,7 @@ def get_args():
     parser.add_argument(
         "--debug",
         action="store_true",
-        help="(unifier)Print debug information, activates debug for logger (and other scripts), defgault=False",
+        help="(unifier)Print debug information, activates debug for logger (and other scripts), default=False",
         default=False,
     )
 
@@ -177,7 +177,7 @@ def get_args():
     parser.add_argument(
         "--number-of-samples",
         type=int,
-        help="(sampling)the number of samples max that will be gathered by the sampler, defalt=40000",
+        help="(sampling)the number of samples max that will be gathered by the sampler, default=40000",
         default=40000,
     )
     parser.add_argument(
