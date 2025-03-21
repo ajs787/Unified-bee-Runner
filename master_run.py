@@ -546,7 +546,7 @@ if args.start <= 5 and args.end >= 5:
     def create_bin_file(file, DIR_NAME, args):
         arguments = (
                 f" {file} "
-                f" --entries {' '.join([f'{i}.png' for i in range(args.frames_per_sample)])} "
+                f" --entries {' '.join([f'{i}.png' for i in range(args.frames_per_sample)])} cls "
                 f" --handler_overrides cls stoi "
                 f" --output {file.replace('tar', 'bin')} "
                 f" --shuffle {20000 // args.frames_per_sample} " 
