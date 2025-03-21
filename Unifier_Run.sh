@@ -45,6 +45,8 @@ python -m pip install --upgrade pip
 
 # purging cache, this fixes (hopefully torch install issues)
 pip cache purge
+# torch is hard to install; changing tmpdir to 
+TMPDIR=. python3 -m pip install torch 
 
 # if you are training with each video being a separate class,
 # use this flag: --each-video-one-class to make it work
