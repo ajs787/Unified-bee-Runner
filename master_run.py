@@ -196,8 +196,8 @@ with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write(f"Epochs: {args.epochs}\n")
     run_desc.write(f"Crop: {args.crop}\n")
     run_desc.write(f"K-Splits: {args.k}\n")
-    run_desc.write(f"START: {args.start}")
-    run_desc.write(f"END: {args.end}")
+    run_desc.write(f"START: {args.start}\n")
+    run_desc.write(f"END: {args.end}\n")
 
 with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write("\n-- Miscellaneous Settings --\n")
