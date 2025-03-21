@@ -111,6 +111,7 @@ This script is organized in chapters, so you can use the start and end flags to 
 import logging
 import os
 import subprocess
+import multiprocessing
 from datetime import datetime
 from stat import S_IREAD, S_IRGRP, S_IROTH
 
@@ -195,6 +196,8 @@ with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write(f"Epochs: {args.epochs}\n")
     run_desc.write(f"Crop: {args.crop}\n")
     run_desc.write(f"K-Splits: {args.k}\n")
+    run_desc.write(f"START: {args.start}")
+    run_desc.write(f"END: {args.end}")
 
 with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write("\n-- Miscellaneous Settings --\n")
@@ -536,13 +539,9 @@ else:
 logging.info("(5) Starting the model training")
 
 if args.start <= 5 and args.end >= 5:
-    
-    if args.binary_training_optimization:
-        logging.info("(5) Creating .bin files given passing of --binary-training-optimization")
-        file_list = [file for file in os.listdir() if file.endswith(".tar")]
 
-        for file in file_list:
-            arguments = (
+    def create_bin_file(file, DIR_NAME, args):
+        arguments = (
                 f" {file} "
                 f" --entries {' '.join([f'{i}.png' for i in range(args.frames_per_sample)])} "
                 f" --handler_overrides cls stoi "
@@ -550,10 +549,20 @@ if args.start <= 5 and args.end >= 5:
                 f" --shuffle {20000 // args.frames_per_sample} " 
                 f" --shardshuffle {20000 // args.frames_per_sample}"
             )
-            subprocess.run(
+        subprocess.run(
                 f"python3 {os.path.join(DIR_NAME, 'bee_analysis/utility/webdataset_to_flatbin.py')} {arguments} >> dataprep.log 2>&1",
                 shell=True,
             )
+    
+    if args.binary_training_optimization:
+        logging.info("(5) Creating .bin files given passing of --binary-training-optimization")
+        file_list = [file for file in os.listdir() if file.endswith(".tar")]
+
+        count = multiprocessing.cpu_count()
+        pool = multiprocessing.Pool(processes=min(count / 5, len(file_list)))
+        logging.info(pool.map(create_bin_file, ([file, DIR_NAME, args] for file in file_list)))
+
+
         subprocess.run(
             "chmod -R 777 *.bin >> /dev/null 2>&1", shell=True
         )
