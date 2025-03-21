@@ -50,6 +50,6 @@ python3 Unified-bee-Runner/master_run.py \
   --equalize-samples --optimize-counting --binary-training-optimization --use-dataloader-workers \
   --height 720 \
   --width 960 \
-  --number-of-samples 100 --max-workers-video-sampling 2 \
+  --number-of-samples 1000 --max-workers-video-sampling 5 \
   --frames-per-sample 5 \
   --gpus 1 >>dataprep.log 2>&1
