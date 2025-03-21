@@ -43,6 +43,9 @@ python3 -m venv venv
 source venv/bin/activate
 python -m pip install --upgrade pip
 
+# this keeps failing for some reason...
+pip install torch 
+
 # if you are training with each video being a separate class,
 # use this flag: --each-video-one-class to make it work
 
