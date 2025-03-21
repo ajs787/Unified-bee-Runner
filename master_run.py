@@ -559,8 +559,9 @@ if args.start <= 5 and args.end >= 5:
         file_list = [file for file in os.listdir() if file.endswith(".tar")]
 
         count = multiprocessing.cpu_count()
-        pool = multiprocessing.Pool(processes=min(count / 5, len(file_list)))
-        logging.info(pool.map(create_bin_file, ([file, DIR_NAME, args] for file in file_list)))
+        pool = multiprocessing.Pool(processes=min(int(count / 5), len(file_list)))
+        pool.starmap(create_bin_file, ((file, DIR_NAME, args) for file in file_list))
+        logging.info("Bin files created.")
 
 
         subprocess.run(
