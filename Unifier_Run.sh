@@ -40,7 +40,10 @@ git submodule update --init --recursive >> ../dataprep.log 2>&1
 cd ..
 
 python3 -m venv venv
+
+# shellcheck disable=SC1091
 source venv/bin/activate
+
 python -m pip install --upgrade pip
 
 # purging cache, this fixes (hopefully torch install issues)
