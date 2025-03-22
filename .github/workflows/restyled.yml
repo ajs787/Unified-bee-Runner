@@ -20,9 +20,9 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - uses: restyled-io/actions/setup@95fa19e36516eead901dd539408b190dd261d634
+      - uses: restyled-io/actions/setup@f746122616af676d687f86bdc7dc0dfb8190b506
       - id: restyler
-        uses: restyled-io/actions/run@95fa19e36516eead901dd539408b190dd261d634
+        uses: restyled-io/actions/run@f746122616af676d687f86bdc7dc0dfb8190b506
         with:
           fail-on-differences: true
 
