@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "requirements.txt"
   pull_request:
     branches:
       - main
+    paths:
+      - 
 
 jobs:
   install_and_check:
