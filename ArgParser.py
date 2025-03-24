@@ -467,7 +467,7 @@ def get_args():
         "--dataset-writing-batch-size",
         type=int,
         help="(sampling) The batch size for writing the dataset, default=10",
-        default=10,
+        default=30,
         required=False,
     )
     parser.add_argument(
