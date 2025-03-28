@@ -160,11 +160,14 @@ try:
 
     logging.info("---- Attempting to Protect Dataset ----")
     # the txt files are the log*.txt files, better safe than sorry
+    # add some protections to prevent deletions of data
+    # of course, it'll be better with more backups
     protected_file_list = [
         file for file in os.listdir()
         if (file.endswith(".txt") or file.endswith(".mp4")
             or file.endswith(".txt"))
     ]
+
     for file in protected_file_list:
         try:
             os.chmod(file, S_IREAD | S_IRGRP | S_IROTH)
@@ -183,7 +186,7 @@ except Exception as e:
     logging.error(f"Error: {e}")
     raise ValueError("Something went wrong in the beginning")
 
-# write the new information into the description
+# write the information into the description, for readability
 with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write("\n-- Run Settings --\n")
     run_desc.write(f"Attempted Samples Per Video: {args.number_of_samples}\n")
@@ -223,13 +226,19 @@ with open("RUN_DESCRIPTION.log", "a") as run_desc:
 
 # convert the video
 # At this point, only the Unified_Bee_Runner, Dataprep.log, venv, and RUN_DESCRIPTION.log need to be modified
+   
+# stupid ilab umask makes files unreadable / undeletable to everyone
+# except the creators, which is great for school projects but not so 
+# good for shared research / data projects
 subprocess.run("chmod -R 777 Unified-bee-Runner *.log venv >> /dev/null 2>&1",
                shell=True)
 
 if args.start > args.end:
     raise ValueError("You can't have the start be higher than the end")
 
-#  if the videos a .h264, convert to .mp4, else, just make a counts.csv
+# -----  STEP 0: Generating the counts.csv  -----
+# if the videos a .h264, convert to .mp4, else, just make a counts.csv
+
 if args.start <= 0 and args.end >= 0:
     logging.info(
         "(0) Starting the video conversions, always defaulting to .mp4")
@@ -292,6 +301,10 @@ else:
         f"Skipping step 0, given the start ({args.start}) and end ({args.end}) values"
     )
 
+
+# ----- STEP 1: Background subtraction -----
+# perform background subtraction, not the best right now, and least used step
+
 if args.start <= 1 and args.end >= 1:
     logging.info("(1) Starting the background subtraction")
     try:
@@ -327,6 +340,10 @@ else:
 
 # this is for the num_outputs argument which will be used to tell the model how many classes there are
 num_outputs = 0
+
+# -----  STEP 2: Creating dataset.csv -----
+# This the dataset.csv file relates the raw video to the log files, which then is
+# used by the sampling in order to generate examples
 
 if args.start <= 2 and args.end >= 2:
     logging.info("(2) Starting the dataset creation")
@@ -420,6 +437,11 @@ else:
         f"Skipping step 2, given the start ({args.start}) and end ({args.end}) values"
     )
 
+# -----  STEP 3: Splitting up the data -----
+# This creates the .sh files along with the dataset_*.csv files. This 
+# is the last step until the Video Sampler can create the tar files of
+# samples
+
 logging.info("(3) Splitting up the data")
 if args.start <= 3 and args.end >= 3:
     try:
@@ -477,6 +499,10 @@ else:
         f"Skipping step 3, given the start ({args.start}) and end ({args.end}) values"
     )
 
+# -----  STEP 4: Creating .tar files with samples -----
+# Generate .npz and .txt temporary storage for samples, and then
+# write that into a tar file
+
 logging.info("(4) Starting the tar sampling")
 if args.start <= 4 and args.end >= 4:
     try:
@@ -527,10 +553,14 @@ else:
         f"Skipping step 4, given the start ({args.start}) and end ({args.end}) values"
     )
 
+# ----- STEP 5: Model Training -----
+# Train the model on the given samples, and if optimized for binary training,
+# convert the .tar files to .bin files
+
 logging.info("(5) Starting the model training")
 
 if args.start <= 5 and args.end >= 5:
-
+    # shell function to pass for multiprocessing
     def create_bin_file(file, DIR_NAME, args):
         arguments = (
             f" {file} "
@@ -557,6 +587,7 @@ if args.start <= 5 and args.end >= 5:
                      ((file, DIR_NAME, args) for file in file_list))
         logging.info("Bin files created.")
 
+        # make sure that everyone can analyze these new files
         subprocess.run("chmod -R 777 *.bin >> /dev/null 2>&1", shell=True)
 
     try:
