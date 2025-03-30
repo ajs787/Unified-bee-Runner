@@ -43,7 +43,7 @@ data_dir
 
 Run `squeue -u <user>` to be able to find your current jobs and the servers that they are running on.
 
-You can edit the [Unifier_Run.sh](Unifier_Run.sh) file with the settings that you desire. You can check the settings by running `python3 Unified-bee-Runner/master_run.py -h` or checking in [ArgParser.py](ArgParser.py) for the arguements that can be used. Not all of them work, including those that crop, and this pipeline is still working through many bugs.
+You can edit the [`Unifier_Run.sh`](Unifier_Run.sh) file with the settings that you desire. You can check the settings by running [`python3 Unified-bee-Runner/master_run.py -h`](master_run.py) or checking in [`ArgParser.py`](ArgParser.py) for the arguements that can be used. Not all of them work, including those that crop, and this pipeline is still working through many bugs.
 
 Then run:
 
@@ -51,7 +51,7 @@ Then run:
 sbatch -x [servers, such as server1,server2] Unified-bee-Runner/Unifier_Run.sh
 ```
 
-To run with default settings, you can run:
+**RECOMMENDED**: To run with default settings, you can run the [`Slurm_Run.sh`](Slurm_Run.sh) file, which has preset sbatch settings:
 
 ```sh
 ./Unified-bee-Runner/Slurm_Run.sh
@@ -66,7 +66,7 @@ This is run using the chapter system, so you can choose the specific steps that 
 2. [`Dataset Creation`](https://github.com/Elias2660/Dataset_Creator): Creates the dataset.csv
 3. [`Data Splitting`](https://github.com/Elias2660/working_bee_analysis/blob/main/make_validation_training.py): Splits the data into training and testing sets
 4. [`Video Sampling`](https://github.com/Elias2660/VideoSamplerRewrite): Clones the VideoSamplerRewrite repository and samples the video frames
-5. [`Model Training`](https://github.com/Elias2660/working_bee_analysis/blob/main/VidActRecTrain.py): Runs the model training script
+5. [`Model Training`](https://github.com/bfirner/bee_analysis/blob/main/VidActRecTrain.py): Runs the model training script
 
 ## Other Stuff
 
