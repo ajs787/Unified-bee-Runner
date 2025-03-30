@@ -1,6 +1,6 @@
 # Unified Bee Runner
 
-Unified Bee Runner is a pipeline for processing and analyzing bee-related datasets. This project includes several steps such as dataset creation, video conversion, data splitting, and model training. The model is meant to run on ilab, and through slurm, and for the Behaviorial Analysis project at [Rutgers WINLAB](https://www.winlab.rutgers.edu/).
+Unified Bee Runner is a pipeline for processing and analyzing bee-related datasets. This project includes several steps such as dataset creation, video conversion, data splitting, and model training. The model is meant to run on ilab, and through slurm, and for the Behavioral Analysis project at [Rutgers WINLAB](https://www.winlab.rutgers.edu/).
 
 This is mean to unify all the code that has been created for the [project (2024 presentation attached)](https://docs.google.com/presentation/d/1j25c85SZ_8YPYvNdfubfVlN3Zx5B-090/edit?usp=sharing&ouid=110217722607110726120&rtpof=true&sd=true). 
 
@@ -43,7 +43,7 @@ data_dir
 
 Run `squeue -u <user>` to be able to find your current jobs and the servers that they are running on.
 
-You can edit the [`Unifier_Run.sh`](Unifier_Run.sh) file with the settings that you desire. You can check the settings by running [`python3 Unified-bee-Runner/master_run.py -h`](master_run.py) or checking in [`ArgParser.py`](ArgParser.py) for the arguements that can be used. Not all of them work, including those that crop, and this pipeline is still working through many bugs.
+You can edit the [`Unifier_Run.sh`](Unifier_Run.sh) file with the settings that you desire. You can check the settings by running [`python3 Unified-bee-Runner/master_run.py -h`](master_run.py) or checking in [`ArgParser.py`](ArgParser.py) for the arguments that can be used. Not all of them work, including those that crop, and this pipeline is still working through many bugs.
 
 Then run:
 
