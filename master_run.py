@@ -128,10 +128,6 @@ try:
     logging.info("---- Starting the pipeline ----")
     path = args.data_path
     os.chdir(path)
-    logging.info("---- Purging all packages ----")
-    subprocess.run("xargs pip uninstall -y >> /dev/null",
-                   shell=True,
-                   executable="/bin/bash")
 
     logging.info("---- Upgrading pip ----")
     subprocess.run("pip install --upgrade pip >> /dev/null",
