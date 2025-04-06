@@ -56,7 +56,7 @@ TMPDIR=. python3 -m pip install torch
 
 python3 Unified-bee-Runner/master_run.py \
   --equalize-samples --optimize-counting --binary-training-optimization --use-dataloader-workers \
-  --height 720 \
+  --height 720 --frame-interval 50 \
   --width 960 \
   --number-of-samples 1000 --max-workers-video-sampling 6 \
   --frames-per-sample 5 \
