@@ -123,8 +123,9 @@ with open("RUN_DESCRIPTION.log", "w+") as rd:
                                       cwd=DIR_NAME).decode("utf-8").strip())
     rd.write(f"Version / Commit: {commit}\n")
 
-    rd.write(f"which python: {os.system('which python3')}")
-    rd.write(f"system: {os.system('uname -a')}")
+    python_version = subprocess.check_output(["which", "python3"]).decode().strip()
+    rd.write(f"which python: {python_version}\n")
+    rd.write(f"system: {os.system('uname -a')}\n")
 
 try:
     args = get_args()
@@ -185,7 +186,7 @@ with open("RUN_DESCRIPTION.log", "a") as run_desc:
 
 with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write("\n-- Parsed Arguments --\n")
-    run_desc.write(f"Parsed Arguments: {args}")
+    run_desc.write(f"Parsed Arguments: {args}\n")
 
 
 
