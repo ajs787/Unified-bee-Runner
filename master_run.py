@@ -123,6 +123,9 @@ with open("RUN_DESCRIPTION.log", "w+") as rd:
                                       cwd=DIR_NAME).decode("utf-8").strip())
     rd.write(f"Version / Commit: {commit}\n")
 
+    rd.write(f"which python: {os.system('which python3')}")
+    rd.write(f"system: {os.system('uname -a')}")
+
 try:
     args = get_args()
     logging.info("---- Starting the pipeline ----")
@@ -179,6 +182,11 @@ with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write(f"Optimize Counting: {args.optimize_counting}\n")
     run_desc.write(f"Use .bin Files: {args.binary_training_optimization}\n")
     run_desc.write(f"Use dataloader workers: {args.use_dataloader_workers}\n")
+
+with open("RUN_DESCRIPTION.log", "a") as run_desc:
+    run_desc.write("\n-- Parsed Arguments --\n")
+    run_desc.write(f"Parsed Arguments: {args}")
+
 
 
 with open("RUN_DESCRIPTION.log", "a") as run_desc:
