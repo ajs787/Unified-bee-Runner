@@ -176,6 +176,10 @@ with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write(f"K-Splits: {args.k}\n")
     run_desc.write(f"START: {args.start}\n")
     run_desc.write(f"END: {args.end}\n")
+    run_desc.write(f"Optimize Counting: {args.optimize_counting}\n")
+    run_desc.write(f"Use .bin Files: {args.binary_training_optimization}\n")
+    run_desc.write(f"Use dataloader workers: {args.use_dataloader_workers}\n")
+
 
 with open("RUN_DESCRIPTION.log", "a") as run_desc:
     run_desc.write("\n-- Miscellaneous Settings --\n")
