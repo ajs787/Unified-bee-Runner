@@ -1,0 +1,27 @@
+[submodule "Video_Frame_Counter"]
+	path = Video_Frame_Counter
+	url = https://github.com/Elias2660/Video_Frame_Counter
+[submodule "Dataset_Creator"]
+	path = Dataset_Creator
+	url = https://github.com/Elias2660/Dataset_Creator
+[submodule "Video_Subtractions"]
+	path = Video_Subtractions
+	url = https://github.com/Elias2660/Video_Subtractions
+[submodule "non_workflow_links/Pi-Code"]
+	path = non_workflow_links/Pi-Code
+	url = https://github.com/Elias2660/Pi-Code
+[submodule "non_workflow_links/DataCropping"]
+	path = non_workflow_links/DataCropping
+	url = https://github.com/Elias2660/DataCropping
+[submodule "non_workflow_links/working_bee_analysis"]
+	path = non_workflow_links/working_bee_analysis
+	url = https://github.com/Elias2660/working_bee_analysis
+[submodule "bee_analysis"]
+	path = bee_analysis
+	url = https://github.com/bfirner/bee_analysis
+[submodule "VideoSamplerRewrite"]
+	path = VideoSamplerRewrite
+	url = https://github.com/Elias2660/VideoSamplerRewrite
+[submodule "non_workflow_links/ai-for-behavioral-discovery"]
+	path = non_workflow_links/ai-for-behavioral-discovery
+	url = https://github.com/benjaminyu14/ai-for-behavioral-discovery

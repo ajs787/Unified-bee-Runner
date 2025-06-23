@@ -5,7 +5,7 @@ echo "Submitting slurm job. Remember to edit the Unifier_Run.sh if you want to m
 sbatch \
   -n 80 \
   -c 10 -G 4 --mem=600G \
-  --time=288000 \
+  --time=28800 \
   -o dataprep.log \
   Unified-bee-Runner/Unifier_Run.sh
 
