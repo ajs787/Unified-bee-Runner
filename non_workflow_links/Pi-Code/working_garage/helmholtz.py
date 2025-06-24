@@ -1,0 +1,60 @@
+import RPi.GPIO as GPIO
+import os
+import datetime
+import time
+
+time.sleep(2)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(10, GPIO.OUT)
+GPIO.setup(8, GPIO.OUT)
+time.sleep(2)
+
+
+
+
+try:
+    while True:
+
+        ### State 1: A-hi B-lo Positive field
+        log = 'date +%Y%m%d_%H%M%S >> /mnt/usb/logPos.txt'
+        os.system(log)
+        GPIO.output(10, 1)
+        GPIO.output(8, 0)
+        time.sleep(10)
+
+
+
+        ### State 2: A-lo B-lo No Field
+        log = 'date +%Y%m%d_%H%M%S >> /mnt/usb/logNo.txt'
+        os.system(log)
+        GPIO.output(10, 0)
+        GPIO.output(8, 0)
+        time.sleep(10)
+        
+        
+
+
+        ### State 3: A-lo B-hi Negative field
+        log = 'date +%Y%m%d_%H%M%S >> /mnt/usb/logNeg.txt'
+        os.system(log)
+        GPIO.output(10, 0)
+        GPIO.output(8, 1)
+        time.sleep(10)
+
+
+        
+        ### State 2 Again: A-lo B-lo No Field
+        log = 'date +%Y%m%d_%H%M%S >> /mnt/usb/logNo.txt'
+        os.system(log)
+        GPIO.output(10, 0)
+        GPIO.output(8, 0)
+        time.sleep(10)
+
+except:
+        GPIO.cleanup()
+
+
+finally:
+       GPIO.cleanup()
+
+
