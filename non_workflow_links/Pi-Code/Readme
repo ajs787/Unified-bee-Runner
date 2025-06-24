@@ -1,0 +1,3 @@
+mv pin.py to pin.py.orig
+mv pin60sec.py to pin.py so does fast cycle on boot.
+

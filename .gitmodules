@@ -1,6 +1,3 @@
-[submodule "non_workflow_links/Pi-Code"]
-	path = non_workflow_links/Pi-Code
-	url = https://github.com/Elias2660/Pi-Code
 [submodule "non_workflow_links/working_bee_analysis"]
 	path = non_workflow_links/working_bee_analysis
 	url = https://github.com/Elias2660/working_bee_analysis
