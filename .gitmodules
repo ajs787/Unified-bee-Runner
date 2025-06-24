@@ -1,6 +1,3 @@
-[submodule "Video_Frame_Counter"]
-	path = Video_Frame_Counter
-	url = https://github.com/Elias2660/Video_Frame_Counter
 [submodule "Video_Subtractions"]
 	path = Video_Subtractions
 	url = https://github.com/Elias2660/Video_Subtractions
