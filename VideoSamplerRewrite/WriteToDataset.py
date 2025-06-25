@@ -1,275 +1,188 @@
 #! /usr/bin/python3
-
 """
-Convert a webdataset to a flat binary file for more efficient dataloading.
+WriteToDataset.py
+
+Writes valid samples into a WebDataset .tar, but preserves any truncated
+or corrupted samples on disk for later debugging.
 """
 
-import argparse
-import functools
-import numpy
-import struct
-# This is only required to convert the webdataset into a torch dataloader
-# because the dataloaderToFlatbin function assumes that there is a batch
-# dimension. If there is a reason to run this without torch, it is possible to
-# make it happen.
-import torch
+import os
+import io
+import time
+import logging
+import shutil
+from concurrent.futures import ThreadPoolExecutor
+
 import webdataset as wds
+from PIL import Image
 
-from flatbin_dataset import dataloaderToFlatbin, getPatchHeaderNames, getPatchDatatypes
-
-def getImageInfo(dataset):
-    image_info = getPatchHeaderNames()
-    dataset = (
-        wds.WebDataset(dataset)
-        .to_tuple(*image_info))
-    row = next(iter(dataset))
-
-    # Use the data from the first entry to extract the patch information
-    patch_info = {}
-    patch_datatypes = getPatchDatatypes()
-    for idx, datum in enumerate(row):
-        # image_scale is a float, the rest are ints
-        if patch_datatypes[idx] == float:
-            patch_info[image_info[idx]] = float(datum)
-        else:
-            patch_info[image_info[idx]] = int(datum)
-    return patch_info
-
-
-def convertWebdataset(args_dataset, entries, output, shuffle = 20000, shardshuffle = 100, overrides = {}):
-    # We want to save any image data in the header of the flatbin file so that the data is later
-    # recreatable. Decode that special data by just fetching a single entry in a dataset.
-
-    # Webdatasets have default decoders for some datatypes, but not all.
-    # We actually just want to do nothing with the data so that we can write it
-    # directly into the flatbin file.
-    def binary_image_decoder(data):
-        assert isinstance(data, bytes)
-        # Just return the bytes
-        return data
-
-    def numpy_decoder(data):
-        assert isinstance(data, bytes)
-        # Just return the bytes, this is already neatly packed with its own header.
-        return data
-
-    def do_nothing(key, data):
-        """Just do nothing with the input data, leaving it as a binary string."""
-        return data
-
-
-    # Decode images as raw bytes
-    if shuffle > 0:
-        dataset = (
-            wds.WebDataset(args_dataset, shardshuffle=shardshuffle)
-            # TODO This isn't the right way to shuffle. Making shuffling and merging flatbins a separate
-            # program.
-            .shuffle(shuffle, initial=shuffle)
-            .decode(
-                do_nothing
-                #wds.handle_extension("cls", do_nothing),
-                #wds.handle_extension("png", binary_image_decoder),
-                #wds.handle_extension("numpy", numpy_decoder)
-            )
-        ).to_tuple(*entries)
-    else:
-        dataset = (
-            wds.WebDataset(args_dataset)
-            .decode(
-                wds.handle_extension("cls", do_nothing),
-                wds.handle_extension("png", binary_image_decoder),
-                wds.handle_extension("numpy", numpy_decoder)
-            )
-        ).to_tuple(*entries)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False, drop_last=False)
-
-    # TODO Should we check the webdataset for metadata and store them? Or leave it to the user?
-    # Store the patch information in the metadata
-    # patch_info = getImageInfo(args_dataset)
-    patch_info = {}
-
-    dataloaderToFlatbin(dataloader, entries, output, patch_info, overrides)
-    print("Binary file complete.")
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        'dataset',
-        type=str,
-        help='Path for the WebDataset archive.')
-    parser.add_argument(
-        '--entries',
-        type=str,
-        nargs='+',
-        required=False,
-        default=['1.png'],
-        help='Which files to decode from the webdataset.')
-    parser.add_argument(
-        '--output',
-        type=str,
-        required=True,
-        default=None,
-        help='Name of the output file (e.g. data.bin).')
-    parser.add_argument(
-        '--shuffle',
-        type=int,
-        required=False,
-        default=20000,
-        help='Shuffle argument to the webdataset. Try (20000//frames per sample). 0 disables all shuffling.')
-    parser.add_argument(
-        '--shardshuffle',
-        type=int,
-        required=False,
-        default=100,
-        help='Shardshuffle argument to the webdataset. Try the number of shards.')
-    parser.add_argument(
-        '--handler_overrides',
-        type=str,
-        nargs='+',
-        required=False,
-        default=[],
-        help='Overrides for default handlers, e.g. "--handler_override cls txt" if cls files should be treated as txt instead of binary numbers.')
-
-    args = parser.parse_args()
-
-    if 0 != len(args.handler_overrides)%2:
-        print("Overrides must be provided in pairs of <file extension>, <type>.")
-    assert(len(args.handler_overrides) % 2 == 0)
-    overrides = {}
-    for over_idx in range(0, len(args.handler_overrides), 2):
-        overrides[args.handler_overrides[over_idx]] = args.handler_overrides[over_idx+1]
-
-    convertWebdataset(args.dataset, args.entries, args.output, args.shuffle, args.shardshuffle, overrides)
-
-webdataset_to_flatbin (mine):
-#!/usr/bin/env python3
-"""
-Convert one or more WebDataset .tar files into flat .bin files.
-This script strips the long "<key>.0.png" names down to "0.png", "1.png", ...
-then packages them via dataloaderToFlatbin().
-"""
-
-import argparse
-import webdataset as wds
-import torch
-import numpy as np
-import struct
-from flatbin_dataset import (
-    dataloaderToFlatbin,
-    getPatchHeaderNames,
-    getPatchDatatypes
+logging.basicConfig(
+    format="%(asctime)s %(levelname)s %(message)s", level=logging.INFO
 )
 
-def strip_prefix(sample):
+def process_sample(key, png_root, txt_root, frames_per_sample, out_channels):
     """
-    Rewrite keys of the form "<key>.<suffix>" into just "<suffix>" by dropping
-    exactly the "<key>." prefix.  Preserve all "__key__", "__url__", "__local_path__".
-    Also strip any leading dot on the left-over names.
+    Reads one sample "<key>/" + "<key>.txt" and returns a WebDataset sample dict,
+    or None if the folder doesn't contain exactly frames_per_sample PNGs or any
+    of the PNGs are corrupt/truncated.
     """
-    out = {}
-    # copy metadata fields untouched
-    for meta in ("__key__", "__url__", "__local_path__"):
-        if meta in sample:
-            out[meta] = sample[meta]
+    frame_dir = os.path.join(png_root, key)
+    files = sorted(f for f in os.listdir(frame_dir) if f.endswith(".png"))
 
-    # our prefix to drop
-    key = sample["__key__"]
-    if isinstance(key, bytes):
-        key = key.decode("utf-8")
-    prefix = key + "."
+    # Check count
+    if len(files) != frames_per_sample:
+        logging.warning(
+            f"{key}: expected {frames_per_sample} frames but found {len(files)}; leaving on disk"
+        )
+        return None
 
-    # rewrite all the other entries
-    for full_name, data in sample.items():
-        if full_name in out:
-            continue
+    # Verify each image is readable
+    for fname in files:
+        path = os.path.join(frame_dir, fname)
+        try:
+            with open(path, "rb") as f:
+                data = f.read()
+            # verify PNG integrity
+            img = Image.open(io.BytesIO(data))
+            img.verify()
+        except Exception as e:
+            logging.error(f"Truncated/corrupt image detected: {path} ({e}); dropping sample {key}")
+            return None
 
-        if full_name.startswith(prefix):
-            # drop exactly "<key>."
-            suffix = full_name[len(prefix):]
-        else:
-            # drop any leading dot(s)
-            suffix = full_name.lstrip(".")
+    # build the sample dict
+    sample = {}
+    safe_key = key.replace(".", "_")
+    sample["__key__"] = safe_key
+    parts = key.split("_")
+    if len(parts) < 2:
+        logging.error(f"Malformed sample key: {key}")
+        return None
+    cls = parts[1]
+    sample["cls"] = cls.encode("utf-8")
 
-        out[suffix] = data
+    # read metadata
+    txt_path = os.path.join(txt_root, f"{key}.txt")
+    try:
+        with open(txt_path, "rb") as f:
+            sample["metadata.txt"] = f.read()
+    except Exception as e:
+        logging.error(f"Could not read metadata for {key}: {e}")
+        return None
 
-    return out
+    # read frames into memory
+    for i, fname in enumerate(files):
+        path = os.path.join(frame_dir, fname)
+        try:
+            with open(path, "rb") as img:
+                sample[f"{i}.png"] = img.read()
+        except Exception as e:
+            logging.error(f"Could not read frame {path}: {e}")
+            return None
+
+    return sample
 
 
-
-def getImageInfo(tar_list):
+def write_to_dataset(
+    png_root: str,
+    tar_file: str,
+    dataset_path: str,
+    frames_per_sample: int = 1,
+    out_channels: int = 3,
+    batch_size: int = 60,
+    equalize_samples: bool = False,
+    max_workers: int = 4,
+):
     """
-    Read one sample from the WebDataset(s) to infer numeric metadata shapes.
-    Returns a dict mapping each numeric field name -> its (int or float) example.
+    Walks each subfolder under png_root, writes *only* fully complete, uncorrupted samples
+    into tar_file. Successful samples are deleted from disk; truncated/corrupt ones stay.
     """
-    image_info = getPatchHeaderNames()
-    ds = (
-        wds.WebDataset(tar_list)
-           .map(strip_prefix)
-           .to_tuple(*image_info)
-    )
-    example = next(iter(ds))
-    datatypes = getPatchDatatypes()
-    return {
-        name: (float(val) if dt is float else int(val))
-        for name, val, dt in zip(image_info, example, datatypes)
-    }
+    start = time.time()
+    logging.info(f"Writing {tar_file} from samples in {png_root}")
+    tar = wds.TarWriter(tar_file, encoder=False)
+    txt_root = png_root.rstrip(os.sep) + "txt"
+    keys = [d for d in os.listdir(png_root)
+            if os.path.isdir(os.path.join(png_root, d))]
+    logging.info(f"Found {len(keys)} sample folders")
 
-def convertWebdataset(dataset, entries, output, shuffle, shardshuffle, overrides):
-    """
-    dataset    : list of .tar filenames
-    entries    : list of keys, e.g. ['0.png','1.png',…,'cls','metadata.txt']
-    output     : path for output .bin
-    shuffle    : int shuffle buffer (WebDataset)
-    shardshuffle: int shard-shuffle buffer
-    overrides  : ext->handler overrides for WebDataset
-    """
-    # 1) figure out numeric metadata header
-    patch_info = {}
+    # optional equalization
+    if equalize_samples:
+        bycls = {}
+        for k in keys:
+            cls = k.split("_")[1]
+            bycls.setdefault(cls, []).append(k)
+        minc = min(len(v) for v in bycls.values())
+        logging.info(f"Equalizing to {minc} samples per class")
+        drop = []
+        for v in bycls.values():
+            v.sort()
+            drop.extend(v[minc:])
+        for d in drop:
+            try:
+                shutil.rmtree(os.path.join(png_root, d))
+                os.remove(os.path.join(txt_root, f"{d}.txt"))
+            except:
+                pass
+        keys = [k for k in keys if k not in drop]
+        logging.info(f"Dropped {len(drop)} (equalize), {len(keys)} remain")
 
-    # 2) build the WebDataset loader with short keys
-    loader = (
-        wds.WebDataset(dataset)
-           .shuffle(shuffle, initial=shuffle)
-           .decode("torchrgb")
-           .map(strip_prefix)
-           .to_tuple(*entries)
-    )
+    count = 0
+    with ThreadPoolExecutor(max_workers=max_workers) as ex:
+        for i in range(0, len(keys), batch_size):
+            batch = keys[i : i + batch_size]
+            for key, sample in zip(
+                batch,
+                ex.map(
+                    process_sample,
+                    batch,
+                    [png_root] * len(batch),
+                    [txt_root] * len(batch),
+                    [frames_per_sample] * len(batch),
+                    [out_channels] * len(batch),
+                ),
+            ):
+                if sample is None:
+                    continue  # truncated/corrupt or error—left on disk
 
-    # 3) write out the flat bin
-    dataloaderToFlatbin(loader, entries, output, patch_info, overrides)
+                # write valid sample to TAR
+                tar.write(sample)
+                count += 1
+
+                # delete only successful samples
+                try:
+                    shutil.rmtree(os.path.join(png_root, key))
+                    os.remove(os.path.join(txt_root, f"{key}.txt"))
+                except Exception as e:
+                    logging.warning(f"Cleanup failed for {key}: {e}")
+
+                if count % 1000 == 0:
+                    logging.info(f"  wrote {count} samples…")
+
+    tar.close()
+    logging.info(f"Finished writing {count}/{len(keys)} samples in {time.time()-start:.1f}s")
+
+    with open(os.path.join(dataset_path, "RUN_DESCRIPTION.log"), "a+") as rd:
+        rd.write(f"{count} samples → {tar_file}\n")
+
 
 if __name__ == "__main__":
-    p = argparse.ArgumentParser(
-        description="Convert WebDataset .tar→flat .bin with zero-prefixed keys"
-    )
-    p.add_argument("dataset", nargs="+",
-                   help="One or more .tar archives to read")
-    p.add_argument("--entries", nargs="+", required=True,
-                   help="Which keys to extract, e.g. 0.png 1.png cls metadata.txt")
-    p.add_argument("--output", required=True,
-                   help="Output .bin filename")
-    p.add_argument("--shuffle", type=int, default=20000,
-                   help="WebDataset shuffle buffer (0 to disable)")
-    p.add_argument("--shardshuffle", type=int, default=100,
-                   help="WebDataset shard-shuffle buffer")
-    p.add_argument("--handler_overrides", nargs="*", default=[],
-                   help="Pairs of ext type to override default handlers")
+    import argparse
+    p = argparse.ArgumentParser()
+    p.add_argument("png_root")
+    p.add_argument("tar_file")
+    p.add_argument("dataset_path")
+    p.add_argument("--frames_per_sample", type=int, default=1)
+    p.add_argument("--out_channels", type=int, default=3)
+    p.add_argument("--batch_size", type=int, default=60)
+    p.add_argument("--equalize", action="store_true")
+    p.add_argument("--max_workers", type=int, default=4)
     args = p.parse_args()
-
-    # handler_overrides must come in pairs
-    if len(args.handler_overrides) % 2 != 0:
-        p.error("handler_overrides must be even-length: ext type [ext type ...]")
-    overrides = {
-        args.handler_overrides[i]: args.handler_overrides[i+1]
-        for i in range(0, len(args.handler_overrides), 2)
-    }
-
-    convertWebdataset(
-        args.dataset,
-        args.entries,
-        args.output,
-        args.shuffle,
-        args.shardshuffle,
-        overrides
+    write_to_dataset(
+        args.png_root,
+        args.tar_file,
+        args.dataset_path,
+        frames_per_sample=args.frames_per_sample,
+        out_channels=args.out_channels,
+        batch_size=args.batch_size,
+        equalize_samples=args.equalize,
+        max_workers=args.max_workers,
     )

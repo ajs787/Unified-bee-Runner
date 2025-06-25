@@ -60,4 +60,4 @@ python3 Unified-bee-Runner/master_run.py \
   --width 960 \
   --number-of-samples 10000 --max-workers-video-sampling 6 \
   --frames-per-sample 5 \
-  --gpus 1 >>dataprep.log 2>&1
+  --gpus 3 >>dataprep.log 2>&1
