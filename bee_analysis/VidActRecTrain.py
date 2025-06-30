@@ -504,9 +504,9 @@ if args.evaluate:
         num_workers=args.num_workers,
         pin_memory=True,
     )
-
-logging.info(f"Loaded train dataloader (batch_size={train_batch_size})"
-             + (f" and eval dataloader(batch_size={train_batch_size})" if args.evaluate else ""))
+    
+    logging.info(f"Loaded train dataloader (batch_size={train_batch_size})"
+                + (f" and eval dataloader(batch_size={train_batch_size})" if args.evaluate else ""))
 
     logging.info(f"Loaded evaluation dataset from {args.evaluate}")
 
