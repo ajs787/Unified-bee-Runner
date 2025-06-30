@@ -10,34 +10,30 @@ import webdataset as wds
 import torch
 import sys
 import os
+import logging
+
+logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", level=logging.INFO)
 
 # adjust this to wherever your flatbin_dataset lives
-sys.path.append("/research/projects/grail/ajs787/target/2025-06-06_2025-06-09/Unified-bee-Runner/bee-analysis/utility")
+#TODO - use relative paths
+#sys.path.append("/research/projects/grail/ajs787/target/2025-06-06_2025-06-09/Unified-bee-Runner/bee-analysis/utility")
+sys.path.append("/research/projects/grail/dyd7/orig-files/Unified-bee-Runner/bee_analysis/utility")
 
 from flatbin_dataset import (
     dataloaderToFlatbin,
     getPatchHeaderNames,
     getPatchDatatypes
 )
-
-from flatbin_dataset import (
-    dataloaderToFlatbin,
-    getPatchHeaderNames,
-    getPatchDatatypes
-)
-
 
 def strip_prefix(sample):
     out = {}
     for meta in ("__key__", "__url__", "__local_path__"):
         if meta in sample:
             out[meta] = sample[meta]
-
     key = sample["__key__"]
     if isinstance(key, bytes):
         key = key.decode("utf-8")
     prefix = key + "."
-
     for full_name, data in sample.items():
         if full_name in out:
             continue
@@ -46,9 +42,7 @@ def strip_prefix(sample):
         else:
             suffix = full_name.lstrip(".")
         out[suffix] = data
-
     return out
-
 
 def getImageInfo(tar_list):
     image_info = getPatchHeaderNames()
@@ -64,17 +58,14 @@ def getImageInfo(tar_list):
         for name, val, dt in zip(image_info, example, datatypes)
     }
 
-
 def convertWebdataset(dataset, entries, output, shuffle, shardshuffle, overrides):
     patch_info = {}
-
-    # Build pipeline: use single-arg handlers because this WebDataset version
     loader = (
         wds.WebDataset(dataset)
            .shuffle(shuffle)
            # .shardshuffle(shardshuffle)  # unsupported
            .decode(
-               wds.handle_extension("cls",   lambda data: data),
+               wds.handle_extension("cls",   lambda data: int(data.decode("utf-8"))),
                wds.handle_extension("png",   lambda data: data),
                wds.handle_extension("txt",   lambda data: data),
                wds.handle_extension("numpy", lambda data: data),
@@ -82,9 +73,7 @@ def convertWebdataset(dataset, entries, output, shuffle, shardshuffle, overrides
            .map(strip_prefix)
            .to_tuple(*entries)
     )
-
     dataloaderToFlatbin(loader, entries, output, patch_info, overrides)
-
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(
@@ -113,12 +102,13 @@ if __name__ == "__main__":
         for i in range(0, len(args.handler_overrides), 2)
     }
 
-    # right after args = p.parse_args() and building `overrides`:
-    valid_shards = [p for p in args.dataset if os.path.getsize(p) > 0]
+    # filter out empty shards
+    valid_shards = [sh for sh in args.dataset if os.path.getsize(sh) > 0]
     if not valid_shards:
-        raise RuntimeError("No non-empty tar shards to convert.")
-    # replace args.dataset with valid_shards:
-    
+        logging.warning("No non-empty tar shards to convert; skipping binary-conversion step.")
+        sys.exit(0)
+
+    logging.info(f"Converting {len(valid_shards)} shard(s): {valid_shards}")
     convertWebdataset(
         valid_shards,
         args.entries,
@@ -127,3 +117,4 @@ if __name__ == "__main__":
         args.shardshuffle,
         overrides
     )
+    logging.info("Binary conversion complete.")

@@ -156,6 +156,23 @@ def writeStoIData(binfile, data):
         value = int(data)
     # This is a single integer, so it should be packed as such
     binfile.write(struct.pack('>i', value))
+#New functuon to handle flexible integer data types
+def writeFlexIntData(binfile, data):
+    """Flexible integer handler that works with bytes, strings, or ints."""
+    # Handle bytes
+    if isinstance(data, (bytes, bytearray)):
+        try:
+            value = int(data.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError):
+            value = int.from_bytes(data, byteorder='big')
+    # Handle strings
+    elif isinstance(data, str):
+        value = int(data)
+    # Already an int or similar numeric type
+    else:
+        value = int(data)
+    # Write as a single integer
+    binfile.write(struct.pack('>i', value))
 
 def convertThenWriteIntData(binfile, data):
     # Convert with frombytes, then write as big endian int.
@@ -273,6 +290,11 @@ def dataloaderToFlatbin(dataloader, entries, output, metadata={}, handlers={}):
         elif name.endswith(".numpy") or handle_str == "numpy":
             datawriters.append(functools.partial(writeNumpyWithHeader, binfile))
             is_variable_size = True
+        elif name.endswith(".txt") or handle_str == "txt":
+            # RAW binary dump of metadata.txt
+            from flatbin_dataset import writeBinaryData
+            datawriters.append(functools.partial(writeBinaryData, binfile))
+            is_variable_size = True
         elif name.endswith(".int") or handle_str == "int":
             datawriters.append(functools.partial(writeIntData, binfile))
             binfile.write((1).to_bytes(length=4, byteorder='big', signed=False)) # Size = 1 element
@@ -281,6 +303,9 @@ def dataloaderToFlatbin(dataloader, entries, output, metadata={}, handlers={}):
             binfile.write((1).to_bytes(length=4, byteorder='big', signed=False)) # Size = 1 element
         elif handle_str == "stoi":
             datawriters.append(functools.partial(writeStoIData, binfile))
+            binfile.write((1).to_bytes(length=4, byteorder='big', signed=False)) # Size = 1 element
+        elif handle_str == "flexint":
+            datawriters.append(functools.partial(writeFlexIntData, binfile))
             binfile.write((1).to_bytes(length=4, byteorder='big', signed=False)) # Size = 1 element
         else:
             raise ValueError(f"Unsupported entry type for '{name}'. Please specify a handler.")
@@ -416,7 +441,12 @@ class FlatbinDataset(torch.utils.data.IterableDataset):
             # Read the data format section of the header
             for _ in range(self.entries_per_sample):
                 name_len = int.from_bytes(binfile.read(4), byteorder='big')
-                assert name_len <= 1024, "Header name length seems unreasonably large."
+                #assert name_len <= 1024, "Header name length seems unreasonably large."
+                #Debug time
+                if name_len > 1024:
+                    print(f"ERROR: Header name length {name_len} exceeds 1024 bytes limit")
+                    print(f"First few bytes of file: {repr(open(self.binpath, 'rb').read(32))}")
+                    raise ValueError(f"Header name length {name_len} seems unreasonably large in {self.binpath}")
                 name = binfile.read(name_len).decode('utf-8')
                 self.header_names.append(name)
 
