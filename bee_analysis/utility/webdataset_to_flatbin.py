@@ -16,8 +16,8 @@ logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", level=loggin
 
 # adjust this to wherever your flatbin_dataset lives
 #TODO - use relative paths
-#sys.path.append("/research/projects/grail/ajs787/target/2025-06-06_2025-06-09/Unified-bee-Runner/bee-analysis/utility")
-sys.path.append("/research/projects/grail/dyd7/orig-files/Unified-bee-Runner/bee_analysis/utility")
+sys.path.append("/research/projects/grail/ajs787/target/2025-06-06_2025-06-09/Unified-bee-Runner/bee-analysis/utility")
+#sys.path.append("/research/projects/grail/dyd7/orig-files/Unified-bee-Runner/bee_analysis/utility")
 
 from flatbin_dataset import (
     dataloaderToFlatbin,

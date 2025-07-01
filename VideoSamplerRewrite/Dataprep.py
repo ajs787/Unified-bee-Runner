@@ -47,6 +47,8 @@ from multiprocessing import freeze_support
 
 import pandas as pd
 
+#hardcoded file path
+sys.path.append("/research/projects/grail/ajs787/target/2025-06-06_2025-06-09/Unified-bee-Runner/VideoSamplerRewrite")
 from SamplerFunctions import sample_video
 from WriteToDataset import write_to_dataset
 
