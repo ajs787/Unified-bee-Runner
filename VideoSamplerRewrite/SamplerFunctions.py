@@ -248,8 +248,14 @@ def sample_video(
                         0,
                     ])
                 elif len(frames) > 0:
-                    logging.warning(f"Incomplete sample for index {index}: only {len(frames)} frames, skipping.")
-
+                    # debugging incomplete samples
+                    row = dataframe.iloc[index]
+                    logging.warning(
+                        f"WARNING!!!! Incomplete sample for index {index}: only {len(frames)} frames (expected {frames_per_sample}). "
+                        f"Begin/end frames: {row['begin_frame']}/{row['end_frame']}, "
+                        f"Counts collected: {row['counts']}, "
+                        f"Deleted this sample since it was not complete"
+                    )
             if len(batch) > 0:
                 save_sample(batch)
 
